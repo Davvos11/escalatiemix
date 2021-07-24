@@ -1,14 +1,13 @@
 import {files} from "./config";
 import {IconProp} from "@fortawesome/fontawesome-svg-core";
-import * as musicMetadata from 'music-metadata-browser';
 
 export type mix = {
     number: number | undefined;
     icon: IconProp | undefined;
-    duration: number | undefined;
+    duration: number;
     filename: string;
-    img: musicMetadata.IPicture | undefined;
-    title: string | undefined;
+    img: string;
+    title: string;
 }
 
 export const getMixes = async (onProgress: (part: number, total: number) => void) => {
@@ -19,31 +18,15 @@ export const getMixes = async (onProgress: (part: number, total: number) => void
     onProgress(counter, total)
 
     for (const file of files) {
-        let img = undefined;
-        let title = undefined;
-        let duration = undefined;
-
-        // Get metadata
-        try {
-            const meta = await musicMetadata.fetchFromUrl(file.filename)
-            img = musicMetadata.selectCover(meta.common.picture)
-            title = meta.common.title
-            duration = meta.format.duration
-        } catch (error) {
-            console.error(`Could not load ${file.filename}`)
-        }
-
-        if (img === null) {
-            img = undefined
-        }
+        const img = file.filename.replace(/.m4a\s*$/i, ".png")
 
         // Save the results
         result.push({
             number: file.number,
             icon: file.icon,
-            duration: duration,
+            duration: file.duration,
             img: img,
-            title: title,
+            title: file.title,
             filename: file.filename
         })
 

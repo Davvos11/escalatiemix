@@ -2,13 +2,19 @@
     font-size: 10vw;
 }
 
-.start {
-    font-size: 5vw;
-    border-radius: 1.3vw;
-}
-
 .container {
     text-align: center;
+}
+
+.start {
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: stretch;
 }
 
 .albumArt {
@@ -51,7 +57,7 @@ h1 {
 .times {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: baseline;
     align-content: stretch;
@@ -62,6 +68,17 @@ h1 {
 .times h1 {
     flex-grow: 1;
     flex-basis: 0;
+    min-width: 250px;
+}
+
+@media screen and (max-width: 773px) {
+    .times h1:nth-child(2) {
+        order: 3;
+    }
+
+    .times {
+        margin-top: 2vh;
+    }
 }
 
 .barWrapper {

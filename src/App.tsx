@@ -49,40 +49,31 @@ class App extends Component<{}, state> {
     render() {
         // If the metadata has not been processed yet, show a loading screen
         if (this.state.mixes === undefined) {
-            return <Container fluid className={styles.container}>
+            return <div className={styles.start}>
                 <div className={styles.large}>Loading {this.state.loadingPart}/{this.state.loadingTotal}</div>
-            </Container>
+            </div>
         }
 
         // If the user has not pressed start yet, show the start button
         if (!this.state.started) {
-            return <Container fluid className={styles.container}>
+            return <div className={styles.start}>
                 <h1><i>Letterlijk</i> alle escalatiemixen</h1>
-                <Button size="lg" className={styles.start}
+                <Button size="lg"
                         onClick={() => this.setState({started: true})}>
                     Start
                 </Button>
-            </Container>
+            </div>
         }
 
-        // Create an image blob string for the cover art
         const mix = this.state.mixes[this.state.index]
-        let img = "";
-        if (mix?.img !== undefined) {
-            img = URL.createObjectURL(
-                new Blob([mix?.img?.data.buffer], {type: 'image/png'} /* (1) */)
-            );
-        }
-        const title = mix.title === undefined ? "" : mix.title
-
 
         return <Container fluid className={styles.container}>
-            <Player img={img} title={title} filename={mix.filename}
+            <Player img={mix.img} title={mix.title} filename={mix.filename}
                     onChange={this.onPlayerChange} emitTime={this.onTimeChange}/>
 
             <div className={styles.times}>
                 <h1>{this.secsToTime(this.state.elapsed)}</h1>
-                <h1>{this.state.eta.toLocaleTimeString().substr(0, 5)}</h1>
+                <h1>{this.getEta(this.state.eta)}</h1>
                 <h1>{this.secsToTime(this.state.left)}</h1>
             </div>
 
@@ -101,8 +92,7 @@ class App extends Component<{}, state> {
         // Calculate the total time
         let duration = 0;
         mixes.forEach(mix => {
-            if (mix.duration !== undefined)
-                duration += mix.duration
+            duration += mix.duration
         })
         this.setState({duration: duration})
         // Load the first song
@@ -133,20 +123,26 @@ class App extends Component<{}, state> {
     private onPlayerChange = (type: change) => {
         if (type === change.Finish) {
             // Load the next song
-            this.setState({index: this.state.index + 1})
-            this.loadSong(this.state.index)
+            if (this.state.index + 1 < this.state.loadingTotal) {
+                this.setState({index: this.state.index + 1})
+                this.loadSong(this.state.index)
+            }
         }
     }
 
     private onTimeChange = (time: number) => {
         const elapsed = this.state.elapsedFinished + time
-        const left = this.state.duration - this.state.elapsed
+        const left = Math.max(0, this.state.duration - this.state.elapsed)
         const eta = new Date((new Date()).getTime() + left * 1000)
         this.setState({elapsed, left, eta})
     }
 
     private secsToTime = (seconds: number) => {
         return new Date(seconds * 1000).toISOString().substr(11, 8)
+    }
+
+    private getEta = (date: Date) => {
+        return `${date.getHours()}:${date.getMinutes()}`
     }
 
     private displayProgress = (part: number, total: number) => {

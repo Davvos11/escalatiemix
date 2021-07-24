@@ -1,5 +1,4 @@
 import {Component} from "react";
-import {inspect} from "util";
 import styles from "./styles.module.css"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPause} from "@fortawesome/free-solid-svg-icons";
@@ -43,7 +42,7 @@ class Player extends Component<props, state> {
                 <img src={this.props.img} alt={this.props.title}/>
                 <span onClick={this.toggle}><FontAwesomeIcon icon={faPause}/></span>
             </div>
-            <h1>{this.props.title}</h1>
+            <h1><b>{this.props.title}</b></h1>
         </>
     }
 
