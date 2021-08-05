@@ -142,7 +142,16 @@ class App extends Component<{}, state> {
     }
 
     private getEta = (date: Date) => {
-        return `${date.getHours()}:${date.getMinutes()}`
+        return `${this.zeroPad(date.getHours())}:${this.zeroPad(date.getMinutes())}`
+    }
+
+    private zeroPad = (number: number) => {
+        if (number.toString().length === 0) {
+            return "00"
+        } else if (number.toString().length === 1) {
+            return "0"+number
+        }
+        return number
     }
 
     private displayProgress = (part: number, total: number) => {
