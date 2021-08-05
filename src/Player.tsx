@@ -9,7 +9,7 @@ type props = {
     title: string,
     filename: string,
     onChange: (change: change) => void,
-    emitTime: (time: number) => void
+    emitTime: (time: number) => void,
 }
 
 export enum change {
@@ -59,6 +59,22 @@ class Player extends Component<props, state> {
     }
 
     async componentDidMount() {
+        // Start emitting the time every second
+        setInterval(() => {
+            this.props.emitTime(this.audio.currentTime)
+        }, 1000)
+
+        // Listen for changes
+        this.audio.addEventListener("pause", ev => {
+            this.props.onChange(change.Pause)
+        })
+        this.audio.addEventListener("play", ev => {
+            this.props.onChange(change.Play)
+        })
+        this.audio.addEventListener("ended", ev => {
+            this.props.onChange(change.Finish)
+        })
+
         return this.start()
     }
 
@@ -80,21 +96,6 @@ class Player extends Component<props, state> {
             console.error(error)
         }
         this.props.onChange(change.Play)
-        // Start emitting the time every second
-        setInterval(() => {
-            this.props.emitTime(this.audio.currentTime)
-        }, 1000)
-
-        // Listen for changes
-        this.audio.addEventListener("pause", ev => {
-            this.props.onChange(change.Pause)
-        })
-        this.audio.addEventListener("play", ev => {
-            this.props.onChange(change.Play)
-        })
-        this.audio.addEventListener("ended", ev => {
-            this.props.onChange(change.Finish)
-        })
     }
 }
 
