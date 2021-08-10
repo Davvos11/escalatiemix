@@ -17,6 +17,12 @@
     align-content: stretch;
 }
 
+.startButton {
+    min-width: 10em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
 .albumArt {
     position: relative;
     width: 40vh;

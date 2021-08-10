@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
-import {Button, Container} from "react-bootstrap";
-import {getMixes, mix} from "./functions";
+import {Button, Container} from 'react-bootstrap';
+import moment, {Moment, Duration} from 'moment';
 
-import styles from "./styles.module.css"
-import Player, {change} from "./Player";
-import Bar from "./Bar";
+import {getMixes, mix} from './functions';
+import styles from './styles.module.css';
+import Player, {change} from './Player';
+import Bar from './Bar';
+import {ScheduleForm, ScheduleFormProps} from './ScheduleForm';
 
 type state = {
     mixes: mix[] | undefined,
@@ -13,9 +15,12 @@ type state = {
     duration: number,
     left: number,
     eta: Date,
-    index: number
-    started: boolean
-    loadingPart: number
+    index: number,
+    started: boolean,
+    startAt?: Moment,
+    startAtDuration?: Duration,
+    scheduleTickIntervalId?: NodeJS.Timeout,
+    loadingPart: number,
     loadingTotal: number
 }
 
@@ -40,6 +45,8 @@ class App extends Component<{}, state> {
             eta: new Date(),
             index: index,
             started: false,
+            startAt: undefined,
+            startAtDuration: undefined,
             loadingPart: 0,
             loadingTotal: 0
         }
@@ -55,14 +62,27 @@ class App extends Component<{}, state> {
         }
 
         // If the user has not pressed start yet, show the start button
-        if (!this.state.started) {
-            return <div className={styles.start}>
-                <h1><i>Letterlijk</i> alle escalatiemixen</h1>
-                <Button size="lg"
-                        onClick={() => this.setState({started: true})}>
-                    Start
-                </Button>
-            </div>
+        if (!this.state.started && !this.state.startAt) {
+            return (
+                <div className={styles.start}>
+                    <h1><i>Letterlijk</i> alle escalatiemixen</h1>
+                    <Button className={styles.startButton} size="lg"
+                            onClick={() => this.setState({started: true})}>
+                        Start
+                    </Button>
+
+                    <ScheduleForm className="my-3" onSubmit={this.handleScheduleSubmit} />
+                </div>
+            );
+        } else if (!this.state.started && this.state.startAt) {
+            return (
+                <div className={styles.start}>
+                    <h1><i>Letterlijk</i> alle escalatiemixen</h1>
+
+                    <h3 className="mt-5 mb-3">Scheduled for {this.state.startAt.format('YYYY-MM-DD HH:mm')}</h3>
+                    {this.state.startAtDuration && <h3 className="my-3">Starting in {this.formatStartAtDuration()}</h3>}
+                </div>
+            );
         }
 
         const mix = this.state.mixes[this.state.index]
@@ -108,6 +128,53 @@ class App extends Component<{}, state> {
                 this.resizeIcons()
             })
         }
+    }
+
+    componentWillUnmount() {
+        if (this.state.scheduleTickIntervalId) {
+            clearInterval(this.state.scheduleTickIntervalId);
+        }
+    }
+
+    private handleScheduleSubmit: ScheduleFormProps['onSubmit'] = (values, event) => {
+        event.preventDefault();
+
+        this.setState({
+            startAt: moment(`${values.date} ${values.time}`, 'YYYY-MM-DD HH:mm'),
+            scheduleTickIntervalId: setInterval(this.scheduleTick, 1000)
+        });
+    }
+
+    private scheduleTick = () => {
+        if (this.state.startAt) {
+            const diff = this.state.startAt.diff(moment());
+
+            console.log('tick');
+
+            if (diff < 0) {
+                this.setState({
+                    started: true
+                });
+
+                if (this.state.scheduleTickIntervalId) {
+                    clearInterval(this.state.scheduleTickIntervalId);
+                }
+            } else {
+                this.setState({
+                    startAtDuration: moment.duration(diff)
+                });
+            }
+        }
+    }
+
+    private formatStartAtDuration = () => {
+        const duration = this.state.startAtDuration;
+        if (!duration) {
+            return;
+        }
+
+        const parts = [Math.floor(duration.asHours()), duration.minutes(), duration.seconds()];
+        return parts.map((s) => s.toString().padStart(2, '0')).join(':');
     }
 
     private loadSong = (index: number) => {
