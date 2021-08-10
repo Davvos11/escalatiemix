@@ -8,8 +8,10 @@ body {
 
   background: #65BBCC;
   background: linear-gradient(to bottom right, #65BBCC, #83F656);
-  height: 100%;
-  min-height: 100vh;
+}
+
+html {
+  min-height: 100%;
 }
 
 code {
