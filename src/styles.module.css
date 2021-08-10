@@ -135,3 +135,13 @@ h1 {
     width: 0;
     border-color: transparent;
 }
+
+@media screen and (min-width: 576px) {
+    .forms {
+        width: 300px;
+    }
+}
+
+.forms input {
+    text-align: center;
+}

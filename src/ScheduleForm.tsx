@@ -32,7 +32,7 @@ export class ScheduleForm extends Component<ScheduleFormProps, SccheduleFormStat
         const now = moment();
 
         return (
-            <Form onSubmit={(event) => onSubmit(this.state, event)} {...props}>
+            <Form onSubmit={(event) => onSubmit(this.state, event)} {...props} className={styles.forms}>
                 <Row xs={1} sm={2}>
                     <Col>
                         <Form.Group controlId="schedule-date">
@@ -44,7 +44,7 @@ export class ScheduleForm extends Component<ScheduleFormProps, SccheduleFormStat
                     <Col>
                         <Form.Group controlId="schedule-time">
                             <Form.Label className="fw-bold">Time</Form.Label>
-                            <Form.Control name="time" type="time" min={now.format('HH:mm')}
+                            <Form.Control name="time" type="time"
                                 value={this.state.time} onChange={(event) => this.setState({time: event.target.value})} />
                         </Form.Group>
                     </Col>

@@ -149,8 +149,6 @@ class App extends Component<{}, state> {
         if (this.state.startAt) {
             const diff = this.state.startAt.diff(moment());
 
-            console.log('tick');
-
             if (diff < 0) {
                 this.setState({
                     started: true
