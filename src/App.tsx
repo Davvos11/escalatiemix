@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import {Button, Container} from 'react-bootstrap';
 import moment, {Moment, Duration} from 'moment';
 
-import {getMixes, mix} from './functions';
+import {getMixes, getUrlParamInt, mix, orderMixes} from './functions';
 import styles from './styles.module.css';
 import Player, {change} from './Player';
 import Bar from './Bar';
 import {ScheduleForm, ScheduleFormProps} from './ScheduleForm';
+import {playlist, playlists} from "./config";
 
 type state = {
     mixes: mix[] | undefined,
@@ -21,20 +22,16 @@ type state = {
     startAtDuration?: Duration,
     scheduleTickIntervalId?: NodeJS.Timeout,
     loadingPart: number,
-    loadingTotal: number
+    loadingTotal: number,
+    playlist: playlist
 }
 
 class App extends Component<{}, state> {
     constructor(props: Readonly<{}>) {
         super(props);
-        // Get the starting song from the url
-        const query = window.location.search
-        const params = new URLSearchParams(query)
-        const song = params.get('song')
-        let index = 0;
-        if (song !== null) {
-            index = parseInt(song)
-        }
+        // Get the starting song and/or playlist from the url
+        const index = getUrlParamInt('song')
+        const list = getUrlParamInt('list')
 
         this.state = {
             mixes: undefined,
@@ -48,7 +45,8 @@ class App extends Component<{}, state> {
             startAt: undefined,
             startAtDuration: undefined,
             loadingPart: 0,
-            loadingTotal: 0
+            loadingTotal: 0,
+            playlist: playlists[list]
         }
     }
 
@@ -85,6 +83,7 @@ class App extends Component<{}, state> {
             );
         }
 
+        // Get the current mix
         const mix = this.state.mixes[this.state.index]
 
         return <Container fluid className={styles.container}>
@@ -107,7 +106,9 @@ class App extends Component<{}, state> {
 
     async componentDidMount() {
         // Get the mixes
-        const mixes = await getMixes(this.displayProgress);
+        let mixes = await getMixes(this.displayProgress);
+        // Sort the mixes according to the provided playlist
+        mixes = orderMixes(mixes, this.state.playlist.list)
         this.setState({mixes: mixes})
         // Calculate the total time
         let duration = 0;

@@ -9,6 +9,11 @@ export type file = {
     title: string
 }
 
+export type playlist = {
+    name: string;
+    list: number[]
+}
+
 export const files:file[] = [
     {number: 1, icon: undefined, filename: "mixes/Gebroeders Scooter - Totale Escalatie-GebroedersScooter_gebroeders-scooter-totale-escalatie.m4a", duration: 3573.7832199546483, title: "Gebroeders Scooter - Totale Escalatie"},
     {number: 2, icon: undefined, filename: "mixes/Gebroeders Scooter - Totale Escalatie 2.0-GebroedersScooter_gebroeders-scooter-totale-escalatie-20.m4a", duration: 3701.8644897959184, title: "Gebroeders Scooter - Totale Escalatie 2.0"},
@@ -21,9 +26,17 @@ export const files:file[] = [
     {number: undefined, icon: faKissWinkHeart,  filename: "mixes/Gebroeders Scooter - Totale ASScalatie-GebroedersScooter_gebroeders-scooter-totale-asscalatie.m4a", duration: 1391.1009523809523, title: "Gebroeders Scooter - Totale ASScalatie"},
     {number: 7, icon: undefined, filename: "mixes/Gebroeders Scooter - Totale Escalatie 7UP-GebroedersScooter_gebroeders-scooter-totale-escalatie-7up.m4a", duration: 3621.0525170068026, title: "Gebroeders Scooter - Totale Escalatie 7UP"},
     {number: 8, icon: undefined, filename: "mixes/Gebroeders Scooter - Totale Escalatie 8BAAN-GebroedersScooter_gebroeders-scooter-totale-escalatie-8baan.m4a", duration: 3677.941405895692, title: "Gebroeders Scooter - Totale Escalatie 8BAAN"},
+    {number: undefined, icon: faBullhorn,  filename: "mixes/Gebroeders Scooter - Totale Escalatie Centurion-GebroedersScooter_gebroeders-scooter-totale-escalatie-centurion.m4a", duration: 6074.472925170068, title: "Gebroeders Scooter - Totale Escalatie Centurion"},
     {number: 9, icon: undefined, filename: "mixes/Gebroeders Scooter - Totale Escalatie 9DARISCH!-GebroedersScooter_gebroeders-scooter-totale-escalatie-9darisch.m4a", duration: 3612.646893424036, title: "Gebroeders Scooter - Totale Escalatie 9DARISCH!"},
     {number: undefined, icon: faSkiing,  filename: "mixes/Gebroeders Scooter - Totale Eskilatie-GebroedersScooter_gebroeders-scooter-totale-eskilatie.m4a", duration: 3944.2278458049886, title: "Gebroeders Scooter - Totale Eskilatie"},
     {number: 10, icon: undefined, filename: "mixes/Gebroeders Scooter - Totale EscalaTIEN-GebroedersScooter_gebroeders-scooter-totale-escalatien.m4a", duration: 3635.309569160998, title: "Gebroeders Scooter - Totale EscalaTIEN"},
     {number: undefined, icon: faVirus,  filename: "mixes/Gebroeders Scooter - Totale Isolatie-GebroedersScooter_gebroeders-scooter-totale-isolatie.m4a", duration: 4078.4856235827665, title: "Gebroeders Scooter - Totale Isolatie"},
-    {number: undefined, icon: faBullhorn,  filename: "mixes/Gebroeders Scooter - Totale Escalatie Centurion-GebroedersScooter_gebroeders-scooter-totale-escalatie-centurion.m4a", duration: 6074.472925170068, title: "Gebroeders Scooter - Totale Escalatie Centurion"},
+]
+
+export const playlists:playlist[] = [
+    {name: "Chronologisch", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]},
+    {name: "Chronologisch (centurion als laatste)", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 11]},
+    {name: "Nice volgorde", list: [11, 14, 9, 15, 7, 8, 12, 2, 10, 5, 6, 3, 1, 0, 13, 4]},
+    {name: "Alleen nice mixen", list: [11, 14, 9, 15, 7, 8, 12, 2, 10]},
+    {name: "Moeilijk veel centurion", list: [11, 11, 11, 11, 11, 11, 11]}
 ]

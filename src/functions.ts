@@ -37,3 +37,21 @@ export const getMixes = async (onProgress: (part: number, total: number) => void
 
     return result;
 }
+
+export const getUrlParamInt = (key: string) => {
+    const query = window.location.search
+    const params = new URLSearchParams(query)
+    const value = params.get(key)
+    if (value !== null) {
+        return parseInt(value)
+    }
+    return 0
+}
+
+export const orderMixes = (mixes: mix[], list: number[]) => {
+    const result: mix[] = []
+    list.forEach(i => {
+        result.push(mixes[i])
+    })
+    return result
+}
