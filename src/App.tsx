@@ -3,7 +3,7 @@ import {Button, Container} from 'react-bootstrap';
 import moment, {Moment, Duration} from 'moment';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-import {getMixes, getUrlParamInt, getUrlParamIntArray, mix, orderMixes, setUrlParams} from './functions';
+import {getMixes, getUrlParamBoolean, getUrlParamInt, getUrlParamIntArray, mix, orderMixes, setUrlParams} from './functions';
 import styles from './styles.module.css';
 import Player, {change} from './Player';
 import Bar from './Bar';
@@ -21,6 +21,7 @@ type state = {
     left: number,
     eta: Date,
     index: number,
+    autoStart: boolean,
     started: boolean,
     startAt?: Moment,
     startAtDuration?: Duration,
@@ -60,6 +61,7 @@ class App extends Component<{}, state> {
             left: 0,
             eta: new Date(),
             index: index,
+            autoStart: getUrlParamBoolean('autostart'),
             started: false,
             startAt: undefined,
             startAtDuration: undefined,
@@ -164,6 +166,12 @@ class App extends Component<{}, state> {
         window.addEventListener("resize", () => {
             this.resizeIcons()
         })
+
+        if (this.state.autoStart) {
+            this.setState({
+                started: true
+            });
+        }
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<state>, snapshot?: any) {
