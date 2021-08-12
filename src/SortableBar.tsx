@@ -38,7 +38,7 @@ class SortableBar extends Component<props, state> {
         const list = this.state.list.slice(0, this.props.mixes.length)
 
         return <div className={styles.barWrapper}>
-            <ReactSortable className={styles.bar}
+            <ReactSortable className={`${styles.bar} ${styles.sortableBar}`}
                            list={this.state.list}
                            setList={this.onUpdate}
             >
