@@ -116,6 +116,12 @@ class Player extends Component<props, state> {
         }
     }
 
+    async componentWillUnmount() {
+        if (this.audio) {
+            this.audio.pause();
+        }
+    }
+
     private async start() {
         await this.toggle();
         this.props.onChange(change.Play)
