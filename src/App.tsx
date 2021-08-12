@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Button, Container} from 'react-bootstrap';
 import moment, {Moment, Duration} from 'moment';
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 import {getMixes, getUrlParamInt, getUrlParamIntArray, mix, orderMixes, setUrlParams} from './functions';
 import styles from './styles.module.css';
@@ -10,6 +11,7 @@ import {ScheduleForm, ScheduleFormProps} from './ScheduleForm';
 import {playlist, playlists} from "./config";
 import SortableBar from "./SortableBar";
 import PlaylistSelect from "./PlaylistSelect";
+import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
 type state = {
     mixes: mix[] | undefined,
@@ -126,6 +128,10 @@ class App extends Component<{}, state> {
         const mix = this.state.mixes[this.state.index]
 
         return <Container fluid className={styles.container}>
+            <Button aria-label="back" className={styles.back}
+                    onClick={() => window.location.reload()}>
+                <FontAwesomeIcon icon={faArrowLeft}/>
+            </Button>
             <Player img={mix.img} title={mix.title} filename={mix.filename}
                     onChange={this.onPlayerChange} emitTime={this.onTimeChange}/>
 
