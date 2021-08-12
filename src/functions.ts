@@ -41,24 +41,24 @@ export const getMixes = async (onProgress: (part: number, total: number) => void
     return result;
 }
 
-export const getUrlParamInt = (key: string) => {
+export const getUrlParam = (key: string, defaultValue: string) => {
     const query = window.location.search
     const params = new URLSearchParams(query)
     const value = params.get(key)
-    if (value !== null) {
-        return parseInt(value)
-    }
-    return 0
+    return value === null ? defaultValue : value;
+}
+
+export const getUrlParamBoolean = (key: string) => {
+    const value = getUrlParam(key, '0');
+    return '1yt'.includes(value[0].toLowerCase());
+}
+
+export const getUrlParamInt = (key: string) => {
+    return parseInt(getUrlParam(key, '0')) || 0;
 }
 
 export const getUrlParamIntArray = (key: string) => {
-    const query = window.location.search
-    const params = new URLSearchParams(query)
-    const value = params.get(key)
-    if (value !== null) {
-        return value.split(",").map(s => parseInt(s))
-    }
-    return []
+    return getUrlParam(key, '').split(",").filter((s) => s.length > 0).map((s) => parseInt(s));
 }
 
 export const orderMixes = (mixes: mix[], list: number[]) => {

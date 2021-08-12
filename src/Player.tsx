@@ -3,7 +3,10 @@ import styles from "./styles.module.css"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPause} from "@fortawesome/free-solid-svg-icons";
 
-type state = {}
+type state = {
+    paused: boolean,
+    error: string | null
+}
 type props = {
     img: string,
     title: string,
@@ -22,6 +25,11 @@ class Player extends Component<props, state> {
     constructor(props: Readonly<props> | props) {
         super(props);
 
+        this.state = {
+            paused: false,
+            error: null
+        }
+
         this.audio = new Audio(this.props.filename)
 
         // Get the starting time from the url
@@ -38,11 +46,12 @@ class Player extends Component<props, state> {
 
     render() {
         return <>
-            <div className={styles.albumArt}>
+            <div className={styles.albumArt} data-paused={this.state.paused}>
                 <img src={this.props.img} alt={this.props.title}/>
                 <span onClick={this.toggle}><FontAwesomeIcon icon={faPause}/></span>
             </div>
             <h1><b>{this.props.title}</b></h1>
+            {this.state.error && <h2>Error: {this.state.error}</h2>}
         </>
     }
 
@@ -50,11 +59,30 @@ class Player extends Component<props, state> {
         try {
             if (this.audio.paused) {
                 await this.audio.play()
+                this.setState({
+                    paused: false,
+                    error: null
+                })
             } else {
-                await this.audio.pause()
+                this.audio.pause()
+                this.setState({
+                    paused: true,
+                    error: null
+                });
             }
         } catch (e) {
-            console.error(e)
+            console.error(e, e.name)
+
+            if (e.name === "NotAllowedError") {
+                this.setState({
+                    paused: true,
+                    error: 'Autoplay not allowed, click the pause button to start.'
+                });
+            } else {
+                this.setState({
+                    error: e.message
+                });
+            }
         }
     }
 
@@ -88,13 +116,14 @@ class Player extends Component<props, state> {
         }
     }
 
-    private async start() {
-        // Start playing
-        try {
-            await this.audio.play()
-        } catch (error) {
-            console.error(error)
+    async componentWillUnmount() {
+        if (this.audio) {
+            this.audio.pause();
         }
+    }
+
+    private async start() {
+        await this.toggle();
         this.props.onChange(change.Play)
     }
 }

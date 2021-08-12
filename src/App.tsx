@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {Button, Container} from 'react-bootstrap';
 import moment, {Moment, Duration} from 'moment';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-import {getMixes, getUrlParamInt, getUrlParamIntArray, mix, orderMixes, setUrlParams} from './functions';
+import {getMixes, getUrlParamBoolean, getUrlParamInt, getUrlParamIntArray, mix, orderMixes, setUrlParams} from './functions';
 import styles from './styles.module.css';
 import Player, {change} from './Player';
 import Bar from './Bar';
@@ -21,6 +21,7 @@ type state = {
     left: number,
     eta: Date,
     index: number,
+    autoStart: boolean,
     started: boolean,
     startAt?: Moment,
     startAtDuration?: Duration,
@@ -35,6 +36,7 @@ type state = {
 class App extends Component<{}, state> {
     constructor(props: Readonly<{}>) {
         super(props);
+
         // Get the starting song and/or playlist from the url
         const index = getUrlParamInt('song')
         const order = getUrlParamIntArray('order')
@@ -59,6 +61,7 @@ class App extends Component<{}, state> {
             left: 0,
             eta: new Date(),
             index: index,
+            autoStart: getUrlParamBoolean('autostart'),
             started: false,
             startAt: undefined,
             startAtDuration: undefined,
@@ -87,7 +90,7 @@ class App extends Component<{}, state> {
             const content = [];
             if (!this.state.startAt) {
                 content.push(
-                    <>
+                    <Fragment key="start">
                         <h1><i>Letterlijk</i> alle escalatiemixen</h1>
                         <Button className={styles.startButton} size="lg"
                                 onClick={() => this.setState({started: true})}>
@@ -95,28 +98,27 @@ class App extends Component<{}, state> {
                         </Button>
 
                         <ScheduleForm className="my-3" onSubmit={this.handleScheduleSubmit}/>
-                    </>
+                    </Fragment>
                 );
             } else {
                 content.push(
-                    <>
+                    <Fragment key="scheduled-start">
                         <h1><i>Letterlijk</i> alle escalatiemixen</h1>
 
                         <h3 className="mt-5 mb-3">Scheduled for {this.state.startAt.format('YYYY-MM-DD HH:mm')}</h3>
                         {this.state.startAtDuration &&
                         <h3 className="my-3">Starting in {this.formatStartAtDuration()}</h3>}
-                    </>
+                    </Fragment>
                 );
             }
 
             // Show the playlist selection
-            content.push(<PlaylistSelect custom={this.state.customPlaylist} selected={this.state.playlist}
+            content.push(<PlaylistSelect key="playlist-select" custom={this.state.customPlaylist} selected={this.state.playlist}
                                          onChange={this.loadPlaylist}/>)
             // Show the current playlist
             if (this.mixes !== undefined) {
-                content.push(<SortableBar mixes={this.mixes} duration={this.state.duration}
-                                          playlist={this.state.playlist.list} onUpdate={this.loadCustomList}
-                                          key={this.state.playlist.name}/>)
+                content.push(<SortableBar key={this.state.playlist.name} mixes={this.mixes} duration={this.state.duration}
+                                          playlist={this.state.playlist.list} onUpdate={this.loadCustomList} />)
             }
 
             return (
@@ -164,6 +166,12 @@ class App extends Component<{}, state> {
         window.addEventListener("resize", () => {
             this.resizeIcons()
         })
+
+        if (this.state.autoStart) {
+            this.setState({
+                started: true
+            });
+        }
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<state>, snapshot?: any) {

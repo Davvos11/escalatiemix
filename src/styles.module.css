@@ -59,7 +59,7 @@
     font-size: 20vw;
 }
 
-.albumArt:hover span {
+.albumArt:hover span, .albumArt[data-paused="true"] span {
     opacity: 1;
 }
 
