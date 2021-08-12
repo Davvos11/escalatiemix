@@ -2,12 +2,14 @@ import React, {Component} from 'react';
 import {Button, Container} from 'react-bootstrap';
 import moment, {Moment, Duration} from 'moment';
 
-import {getMixes, getUrlParamInt, mix, orderMixes} from './functions';
+import {getMixes, getUrlParamInt, getUrlParamIntArray, mix, orderMixes, setUrlParams} from './functions';
 import styles from './styles.module.css';
 import Player, {change} from './Player';
 import Bar from './Bar';
 import {ScheduleForm, ScheduleFormProps} from './ScheduleForm';
 import {playlist, playlists} from "./config";
+import SortableBar from "./SortableBar";
+import PlaylistSelect from "./PlaylistSelect";
 
 type state = {
     mixes: mix[] | undefined,
@@ -23,7 +25,9 @@ type state = {
     scheduleTickIntervalId?: NodeJS.Timeout,
     loadingPart: number,
     loadingTotal: number,
-    playlist: playlist
+    playlist: playlist,
+    customPlaylist: boolean
+    order: number[]
 }
 
 class App extends Component<{}, state> {
@@ -31,7 +35,19 @@ class App extends Component<{}, state> {
         super(props);
         // Get the starting song and/or playlist from the url
         const index = getUrlParamInt('song')
-        const list = getUrlParamInt('list')
+        const order = getUrlParamIntArray('order')
+        let list;
+        let custom = false;
+
+        // If an order has been specified, create the custom playlist
+        if (order.length > 0) {
+            list = {name: "Custom", list: order}
+            custom = true;
+        } else {
+            // Otherwise, try to get the specified or default playlist
+            const index = getUrlParamInt('list')
+            list = playlists[index]
+        }
 
         this.state = {
             mixes: undefined,
@@ -46,9 +62,14 @@ class App extends Component<{}, state> {
             startAtDuration: undefined,
             loadingPart: 0,
             loadingTotal: 0,
-            playlist: playlists[list]
+            playlist: list,
+            customPlaylist: custom,
+            order: order
         }
     }
+
+    private mixes: mix[] | undefined = undefined
+    private playlists = playlists
 
 
     render() {
@@ -59,28 +80,46 @@ class App extends Component<{}, state> {
             </div>
         }
 
-        // If the user has not pressed start yet, show the start button
-        if (!this.state.started && !this.state.startAt) {
-            return (
-                <div className={styles.start}>
-                    <h1><i>Letterlijk</i> alle escalatiemixen</h1>
-                    <Button className={styles.startButton} size="lg"
-                            onClick={() => this.setState({started: true})}>
-                        Start
-                    </Button>
+        // If the user has not pressed start yet, show the start button and playlist selection
+        if (!this.state.started) {
+            const content = [];
+            if (!this.state.startAt) {
+                content.push(
+                    <>
+                        <h1><i>Letterlijk</i> alle escalatiemixen</h1>
+                        <Button className={styles.startButton} size="lg"
+                                onClick={() => this.setState({started: true})}>
+                            Start nu
+                        </Button>
 
-                    <ScheduleForm className="my-3" onSubmit={this.handleScheduleSubmit} />
-                </div>
-            );
-        } else if (!this.state.started && this.state.startAt) {
-            return (
-                <div className={styles.start}>
-                    <h1><i>Letterlijk</i> alle escalatiemixen</h1>
+                        <ScheduleForm className="my-3" onSubmit={this.handleScheduleSubmit}/>
+                    </>
+                );
+            } else {
+                content.push(
+                    <>
+                        <h1><i>Letterlijk</i> alle escalatiemixen</h1>
 
-                    <h3 className="mt-5 mb-3">Scheduled for {this.state.startAt.format('YYYY-MM-DD HH:mm')}</h3>
-                    {this.state.startAtDuration && <h3 className="my-3">Starting in {this.formatStartAtDuration()}</h3>}
-                </div>
-            );
+                        <h3 className="mt-5 mb-3">Scheduled for {this.state.startAt.format('YYYY-MM-DD HH:mm')}</h3>
+                        {this.state.startAtDuration &&
+                        <h3 className="my-3">Starting in {this.formatStartAtDuration()}</h3>}
+                    </>
+                );
+            }
+
+            // Show the playlist selection
+            content.push(<PlaylistSelect custom={this.state.customPlaylist} selected={this.state.playlist}
+                                         onChange={this.loadPlaylist}/>)
+            // Show the current playlist
+            if (this.mixes !== undefined) {
+                content.push(<SortableBar mixes={this.mixes} duration={this.state.duration}
+                                          playlist={this.state.playlist.list} onUpdate={this.loadCustomList}
+                                          key={this.state.playlist.name}/>)
+            }
+
+            return (
+                <Container fluid className={styles.start}>{content}</Container>
+            )
         }
 
         // Get the current mix
@@ -105,11 +144,51 @@ class App extends Component<{}, state> {
     }
 
     async componentDidMount() {
-        // Get the mixes
-        let mixes = await getMixes(this.displayProgress);
+        // Get the mixes (and save them in their original order)
+        this.mixes = await getMixes(this.displayProgress);
         // Sort the mixes according to the provided playlist
-        mixes = orderMixes(mixes, this.state.playlist.list)
+        const mixes = orderMixes(this.mixes, this.state.playlist.list)
         this.setState({mixes: mixes})
+        // Load the mixes
+        this.loadMixes(mixes)
+        // Resize icons that are too big
+        this.resizeIcons();
+
+        // Listen for resizes
+        window.addEventListener("resize", () => {
+            this.resizeIcons()
+        })
+    }
+
+    componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<state>, snapshot?: any) {
+        if (!prevState.started && this.state.started) {
+            // Resize icons that are too big
+            this.resizeIcons();
+        }
+
+        if (prevState.playlist !== this.state.playlist
+            && this.mixes !== undefined && this.state.playlist !== undefined) {
+            // Sort the mixes according to the provided playlist
+            const mixes = orderMixes(this.mixes, this.state.playlist.list)
+            this.setState({mixes: mixes})
+            // Load the mixes
+            this.loadMixes(mixes)
+
+            // Wait until the page has updated
+            setTimeout(() => {
+                // Resize icons that are too big
+                this.resizeIcons();
+            }, 50)
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.state.scheduleTickIntervalId) {
+            clearInterval(this.state.scheduleTickIntervalId);
+        }
+    }
+
+    private loadMixes = (mixes: mix[]) => {
         // Calculate the total time
         let duration = 0;
         mixes.forEach(mix => {
@@ -118,23 +197,7 @@ class App extends Component<{}, state> {
         this.setState({duration: duration})
         // Load the first song
         this.loadSong(this.state.index);
-    }
 
-    componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<state>, snapshot?: any) {
-        if (!prevState.started && this.state.started) {
-            // Resize icons that are too big
-            this.resizeIcons();
-            // Listen for resizes
-            window.addEventListener("resize", () => {
-                this.resizeIcons()
-            })
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.state.scheduleTickIntervalId) {
-            clearInterval(this.state.scheduleTickIntervalId);
-        }
     }
 
     private handleScheduleSubmit: ScheduleFormProps['onSubmit'] = (values, event) => {
@@ -215,7 +278,7 @@ class App extends Component<{}, state> {
         if (number.toString().length === 0) {
             return "00"
         } else if (number.toString().length === 1) {
-            return "0"+number
+            return "0" + number
         }
         return number
     }
@@ -228,17 +291,33 @@ class App extends Component<{}, state> {
         // Resize icons that are too big
         const icons = document.querySelectorAll(`.${styles.bar} div`)
         icons.forEach(icon => {
+            let style = icon.getAttribute("style")
+            style = style == null ? "" : style
+
             if (icon.clientWidth <= 48) {
                 const newSize = Math.min(icon.clientWidth, 30)
 
-                let style = icon.getAttribute("style")
-                style = style == null ? "" : style
+                // Set / replace the font-size attribute
                 style = style.replace(/font-size: \S+;/i, "")
                 style += `font-size: ${newSize}px;`
-
-                icon.setAttribute("style", style)
+            } else {
+                // Remove the font-size attribute (we may have set it before)
+                style = style.replace(/font-size: \S+;/i, "")
             }
+
+            icon.setAttribute("style", style)
         })
+    }
+
+    private loadPlaylist = (index: number) => {
+        this.setState({playlist: this.playlists[index], customPlaylist: false})
+        setUrlParams([["list", index.toString()], ["order", null]])
+    }
+
+    private loadCustomList = (list: number[]) => {
+        const playlist = {name: "Custom", list: list}
+        this.setState({playlist: playlist, customPlaylist: true})
+        setUrlParams([["list", null], ["order", list.toString().replace(/^\[|]$/, "")]])
     }
 
 }

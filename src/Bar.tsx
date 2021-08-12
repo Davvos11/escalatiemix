@@ -34,23 +34,24 @@ class Bar extends Component<props, state> {
                     return <div style={{width: length + "%"}}
                                 onClick={() => this.props.onClick(index)}
                                 key={index} >
-                        {this.getIcon(mix)}
+                        {getIcon(mix)}
                     </div>
                 })}
             </div>
         </div>;
     }
 
-    private getIcon = (mix: mix) => {
-        let text;
-        if (mix.icon !== undefined) {
-            text = <FontAwesomeIcon icon={mix.icon}/>
-        } else if (mix.number !== undefined) {
-            text = mix.number
-        }
+}
 
-        return text
+export const getIcon = (mix: mix) => {
+    let text;
+    if (mix.icon !== undefined) {
+        text = <FontAwesomeIcon icon={mix.icon}/>
+    } else if (mix.number !== undefined) {
+        text = mix.number
     }
+
+    return text
 }
 
 export default Bar

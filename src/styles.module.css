@@ -92,6 +92,7 @@ h1 {
     background-color: white;
     border-radius: 7px;
     height: 60px;
+    width: 100%;
 }
 
 .bar {
@@ -99,7 +100,7 @@ h1 {
     height: 100%;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
     align-content: stretch;
@@ -119,6 +120,7 @@ h1 {
     justify-content: center;
     cursor: pointer;
     transition: .5s ease;
+    transition-property: background;
 }
 
 .bar div:hover {
@@ -143,5 +145,23 @@ h1 {
 }
 
 .forms input {
+    text-align: center;
+}
+
+.forms {
+    margin-bottom: 4vh;
+}
+
+.playlistSelect {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2vh;
+}
+
+.playlistSelect select {
+    max-width: 350px;
     text-align: center;
 }
