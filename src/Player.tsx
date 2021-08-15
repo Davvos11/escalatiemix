@@ -20,7 +20,7 @@ export enum change {
 }
 
 class Player extends Component<props, state> {
-    private audio: HTMLAudioElement;
+    private readonly audio: HTMLAudioElement;
 
     constructor(props: Readonly<props> | props) {
         super(props);
@@ -78,6 +78,13 @@ class Player extends Component<props, state> {
                     paused: true,
                     error: 'Autoplay not allowed, click the pause button to start.'
                 });
+            }
+            if (e.name === "AbortError" && !this.audio.paused) {
+                /*
+                 In Chrome, for some reason the player will emit the following error:
+                 The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
+                 However the audio does start playing correctly, therefore we just ignore this error :)
+                */
             } else {
                 this.setState({
                     error: e.message
