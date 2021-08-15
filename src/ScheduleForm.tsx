@@ -48,7 +48,7 @@ export class ScheduleForm extends Component<ScheduleFormProps, SccheduleFormStat
                         <Row xs={1} sm={2}>
                             <Col>
                                 <Form.Group controlId="schedule-date">
-                                    <Form.Label className="fw-bold">Date</Form.Label>
+                                    <Form.Label className="fw-bold">Datum</Form.Label>
                                     <Form.Control name="date" type="date" min={now.format('YYYY-MM-DD')}
                                                   value={this.state.date}
                                                   onChange={(event) => this.setState({date: event.target.value})}/>
@@ -56,7 +56,7 @@ export class ScheduleForm extends Component<ScheduleFormProps, SccheduleFormStat
                             </Col>
                             <Col>
                                 <Form.Group controlId="schedule-time">
-                                    <Form.Label className="fw-bold">Time</Form.Label>
+                                    <Form.Label className="fw-bold">Tijd</Form.Label>
                                     <Form.Control name="time" type="time"
                                                   value={this.state.time}
                                                   onChange={(event) => this.setState({time: event.target.value})}/>

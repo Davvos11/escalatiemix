@@ -76,7 +76,7 @@ class Player extends Component<props, state> {
             if (e.name === "NotAllowedError") {
                 this.setState({
                     paused: true,
-                    error: 'Autoplay not allowed, click the pause button to start.'
+                    error: 'Autoplay is niet toegestaan, klik op de play knop om te starten.'
                 });
             }
             if (e.name === "AbortError" && !this.audio.paused) {
