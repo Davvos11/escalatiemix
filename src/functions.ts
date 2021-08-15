@@ -85,7 +85,7 @@ export const setUrlParams = (params: [key: string, value: string | null][]) => {
 const getUrlParams: () => {[id: string]: string} = () => {
     // Split all parameters
     const list = window.location.search.split("&")
-    if (!list.includes("?")) {
+    if (!list[0].includes("?")) {
         return {}
     }
 

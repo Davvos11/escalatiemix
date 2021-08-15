@@ -131,7 +131,7 @@ class App extends Component<{}, state> {
 
         return <Container fluid className={styles.container}>
             <Button aria-label="back" className={styles.back}
-                    onClick={() => window.location.reload()}>
+                    onClick={this.backToHome}>
                 <FontAwesomeIcon icon={faArrowLeft}/>
             </Button>
             <Player img={mix.img} title={mix.title} filename={mix.filename}
@@ -332,6 +332,13 @@ class App extends Component<{}, state> {
         const playlist = {name: "Custom", list: list}
         this.setState({playlist: playlist, customPlaylist: true})
         setUrlParams([["list", null], ["order", list.toString().replace(/^\[|]$/, "")]])
+    }
+
+    private backToHome = () => {
+        // Remove the autostart parameter from the URL
+        setUrlParams([["autostart", null]])
+        // Reload the page
+        window.location.reload()
     }
 
 }
