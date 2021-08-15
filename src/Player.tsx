@@ -81,7 +81,7 @@ class Player extends Component<props, state> {
                     error: 'Autoplay is niet toegestaan, klik op de play knop om te starten.'
                 });
             }
-            if (e.name === "AbortError" && !this.audio.paused) {
+            else if (e.name === "AbortError" && !this.audio.paused) {
                 /*
                  In Chrome, for some reason the player will emit the following error:
                  The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
