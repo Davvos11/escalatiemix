@@ -3,7 +3,15 @@ import {Button, Container} from 'react-bootstrap';
 import moment, {Moment, Duration} from 'moment';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-import {getMixes, getUrlParamBoolean, getUrlParamInt, getUrlParamIntArray, mix, orderMixes, setUrlParams} from './functions';
+import {
+    getMixes,
+    getUrlParamBoolean,
+    getUrlParamInt,
+    getUrlParamIntArray,
+    mix,
+    orderMixes,
+    setUrlParams
+} from './functions';
 import styles from './styles.module.css';
 import Player, {change} from './Player';
 import Bar from './Bar';
@@ -11,12 +19,14 @@ import {ScheduleForm, ScheduleFormProps} from './ScheduleForm';
 import {playlist, playlists} from "./config";
 import SortableBar from "./SortableBar";
 import PlaylistSelect from "./PlaylistSelect";
-import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
+import {faArrowLeft, faShareAlt} from "@fortawesome/free-solid-svg-icons";
+import ShareDialog from "./ShareDialog";
 
 type state = {
     mixes: mix[] | undefined,
     elapsedFinished: number,
     elapsed: number,
+    elapsedInCurrentSong: number,
     duration: number,
     left: number,
     eta: Date,
@@ -30,7 +40,8 @@ type state = {
     loadingTotal: number,
     playlist: playlist,
     customPlaylist: boolean
-    order: number[]
+    order: number[],
+    showShareDialog: boolean
 }
 
 class App extends Component<{}, state> {
@@ -57,6 +68,7 @@ class App extends Component<{}, state> {
             mixes: undefined,
             elapsedFinished: 0,
             elapsed: 0,
+            elapsedInCurrentSong: 0,
             duration: 0,
             left: 0,
             eta: new Date(),
@@ -69,7 +81,8 @@ class App extends Component<{}, state> {
             loadingTotal: 0,
             playlist: list,
             customPlaylist: custom,
-            order: order
+            order: order,
+            showShareDialog: false
         }
     }
 
@@ -113,17 +126,29 @@ class App extends Component<{}, state> {
             }
 
             // Show the playlist selection
-            content.push(<PlaylistSelect key="playlist-select" custom={this.state.customPlaylist} selected={this.state.playlist}
+            content.push(<PlaylistSelect key="playlist-select" custom={this.state.customPlaylist}
+                                         selected={this.state.playlist}
                                          onChange={this.loadPlaylist}/>)
             // Show the current playlist
             if (this.mixes !== undefined) {
-                content.push(<SortableBar key={this.state.playlist.name} mixes={this.mixes} duration={this.state.duration}
-                                          playlist={this.state.playlist.list} onUpdate={this.loadCustomList} />)
+                content.push(<SortableBar key={this.state.playlist.name} mixes={this.mixes}
+                                          duration={this.state.duration}
+                                          playlist={this.state.playlist.list} onUpdate={this.loadCustomList}/>)
             }
 
             return (
                 <Container fluid className={styles.start}>{content}</Container>
             )
+        }
+
+        // Check if we need to show the "share" modal
+        let shareModal;
+        if (this.state.showShareDialog) {
+            shareModal = <ShareDialog song={this.state.index}
+                                      getTime={() => this.state.elapsedInCurrentSong}
+                                      onClose={() => this.setState({showShareDialog: false})}/>
+        } else {
+            shareModal = null;
         }
 
         // Get the current mix
@@ -133,6 +158,10 @@ class App extends Component<{}, state> {
             <Button aria-label="back" className={styles.back}
                     onClick={this.backToHome}>
                 <FontAwesomeIcon icon={faArrowLeft}/>
+            </Button>
+            <Button aria-label="share" className={styles.share}
+                    onClick={() => this.setState({showShareDialog: true})}>
+                <FontAwesomeIcon icon={faShareAlt}/>
             </Button>
             <Player img={mix.img} title={mix.title} filename={mix.filename}
                     onChange={this.onPlayerChange} emitTime={this.onTimeChange}/>
@@ -147,6 +176,8 @@ class App extends Component<{}, state> {
                  onClick={this.loadSong}
                  duration={this.state.duration}
                  elapsed={this.state.elapsed}/>
+
+            {shareModal}
         </Container>
 
     }
@@ -277,7 +308,7 @@ class App extends Component<{}, state> {
         const elapsed = this.state.elapsedFinished + time
         const left = Math.max(0, this.state.duration - this.state.elapsed)
         const eta = new Date((new Date()).getTime() + left * 1000)
-        this.setState({elapsed, left, eta})
+        this.setState({elapsed, left, eta, elapsedInCurrentSong: time})
     }
 
     private secsToTime = (seconds: number) => {
@@ -335,8 +366,10 @@ class App extends Component<{}, state> {
     }
 
     private backToHome = () => {
-        // Remove the autostart parameter from the URL
-        setUrlParams([["autostart", null]])
+        // Remove the autostart, song and time parameters from the URL
+        setUrlParams([
+            ["autostart", null], ["song", null], ["t", null]
+        ])
         // Reload the page
         window.location.reload()
     }

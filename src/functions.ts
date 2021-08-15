@@ -69,7 +69,7 @@ export const orderMixes = (mixes: mix[], list: number[]) => {
     return result
 }
 
-export const setUrlParams = (params: [key: string, value: string | null][]) => {
+export const generateUrlParams = (params: [key: string, value: string | null][]) => {
     const query = getUrlParams()
     params.forEach(param => {
         if (param[1] !== null) {
@@ -78,7 +78,11 @@ export const setUrlParams = (params: [key: string, value: string | null][]) => {
             delete query[param[0]]
         }
     })
-    const newQuery = encodeUrlParams(query)
+    return  encodeUrlParams(query)
+}
+
+export const setUrlParams = (params: [key: string, value: string | null][]) => {
+    const newQuery = generateUrlParams(params)
     window.history.pushState(null, document.title, newQuery)
 }
 

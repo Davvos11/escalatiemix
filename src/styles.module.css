@@ -30,6 +30,13 @@
     z-index: 100;
 }
 
+.share {
+    position: absolute;
+    top: 4vh;
+    left: calc(4vh + 50px);
+    z-index: 100;
+}
+
 .albumArt {
     position: relative;
     width: 40vh;
