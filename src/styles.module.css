@@ -137,7 +137,7 @@ h1 {
     transition-property: background;
 }
 
-.bar div:hover {
+.barWrapper:not([data-dragging="true"]) .bar div:hover {
     background: #abc9ee66;
 }
 
@@ -154,6 +154,14 @@ h1 {
 
 .sortableBar div {
     cursor: grab;
+}
+
+.draggingItem {
+    border-left: 0 !important;
+}
+
+.ghostItem {
+    background: #abc9ee66;
 }
 
 @media screen and (min-width: 576px) {

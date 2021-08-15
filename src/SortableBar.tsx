@@ -19,6 +19,7 @@ type props = {
 }
 type state = {
     list: item[],
+    dragging: boolean
 }
 
 class SortableBar extends Component<props, state> {
@@ -26,7 +27,8 @@ class SortableBar extends Component<props, state> {
         super(props);
 
         this.state = {
-            list: this.getList()
+            list: this.getList(),
+            dragging: false
         }
     }
 
@@ -37,10 +39,14 @@ class SortableBar extends Component<props, state> {
     render() {
         const list = this.state.list.slice(0, this.props.mixes.length)
 
-        return <div className={styles.barWrapper}>
+        return <div className={styles.barWrapper} data-dragging={this.state.dragging}>
             <ReactSortable className={`${styles.bar} ${styles.sortableBar}`}
+                           dragClass={styles.draggingItem}
+                           ghostClass={styles.ghostItem}
                            list={this.state.list}
                            setList={this.onUpdate}
+                           onStart={() => this.setState({dragging: true})}
+                           onEnd={() => this.setState({dragging: false})}
             >
                 {list.map((item, index) => {
                     const mix = this.props.mixes[item.id]
