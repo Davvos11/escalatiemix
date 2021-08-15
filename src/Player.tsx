@@ -1,7 +1,7 @@
 import {Component} from "react";
 import styles from "./styles.module.css"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPause} from "@fortawesome/free-solid-svg-icons";
+import {faPause, faPlay} from "@fortawesome/free-solid-svg-icons";
 
 type state = {
     paused: boolean,
@@ -45,10 +45,12 @@ class Player extends Component<props, state> {
     }
 
     render() {
+        const icon = this.state.paused ? faPlay : faPause
+
         return <>
             <div className={styles.albumArt} data-paused={this.state.paused}>
                 <img src={this.props.img} alt={this.props.title}/>
-                <span onClick={this.toggle}><FontAwesomeIcon icon={faPause}/></span>
+                <span onClick={this.toggle}><FontAwesomeIcon icon={icon}/></span>
             </div>
             <h1><b>{this.props.title}</b></h1>
             {this.state.error && <h2>Error: {this.state.error}</h2>}
