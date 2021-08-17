@@ -36,6 +36,12 @@ class SortableBar extends Component<props, state> {
         this.setState({list: this.getList()})
     }
 
+    componentDidUpdate(prevProps: Readonly<props>, prevState: Readonly<state>, snapshot?: any) {
+        if (prevProps.playlist !== this.props.playlist) {
+            this.setState({list: this.getList()})
+        }
+    }
+
     render() {
         const list = this.state.list.slice(0, this.props.mixes.length)
 

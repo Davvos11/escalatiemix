@@ -178,13 +178,22 @@ h1 {
     margin-bottom: 4vh;
 }
 
-.playlistSelect {
+.playlistSelectWrapper {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin-bottom: 2vh;
+}
+
+.playlistSelect {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
 }
 
 .playlistSelect select {

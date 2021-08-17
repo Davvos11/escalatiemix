@@ -21,6 +21,7 @@ import SortableBar from "./SortableBar";
 import PlaylistSelect from "./PlaylistSelect";
 import {faArrowLeft, faShareAlt} from "@fortawesome/free-solid-svg-icons";
 import ShareDialog from "./ShareDialog";
+import {shuffle} from "underscore";
 
 type state = {
     mixes: mix[] | undefined,
@@ -39,9 +40,9 @@ type state = {
     loadingPart: number,
     loadingTotal: number,
     playlist: playlist,
-    customPlaylist: boolean
-    order: number[],
-    showShareDialog: boolean
+    customPlaylist: boolean,
+    showShareDialog: boolean,
+    order: number[] | undefined
 }
 
 class App extends Component<{}, state> {
@@ -81,8 +82,8 @@ class App extends Component<{}, state> {
             loadingTotal: 0,
             playlist: list,
             customPlaylist: custom,
-            order: order,
-            showShareDialog: false
+            showShareDialog: false,
+            order: custom ? order : undefined
         }
     }
 
@@ -126,14 +127,19 @@ class App extends Component<{}, state> {
             }
 
             // Show the playlist selection
-            content.push(<PlaylistSelect key="playlist-select" custom={this.state.customPlaylist}
+            content.push(<div key="playlist-select" className={styles.playlistSelectWrapper}>
+                    <PlaylistSelect custom={this.state.customPlaylist}
                                          selected={this.state.playlist}
-                                         onChange={this.loadPlaylist}/>)
+                                    onChange={this.loadPlaylist}/>
+                    <Button onClick={this.shufflePlaylist}>Shuffle</Button>
+                </div>
+            )
             // Show the current playlist
             if (this.mixes !== undefined) {
                 content.push(<SortableBar key={this.state.playlist.name} mixes={this.mixes}
                                           duration={this.state.duration}
-                                          playlist={this.state.playlist.list} onUpdate={this.loadCustomList}/>)
+                                          playlist={this.state.playlist.list}
+                                          onUpdate={this.loadCustomList}/>)
             }
 
             return (
@@ -355,13 +361,14 @@ class App extends Component<{}, state> {
     }
 
     private loadPlaylist = (index: number) => {
-        this.setState({playlist: this.playlists[index], customPlaylist: false})
+        const playlist = this.playlists[index]
+        this.setState({playlist: playlist, customPlaylist: false, order: undefined})
         setUrlParams([["list", index.toString()], ["order", null]])
     }
 
     private loadCustomList = (list: number[]) => {
         const playlist = {name: "Custom", list: list}
-        this.setState({playlist: playlist, customPlaylist: true})
+        this.setState({playlist: playlist, customPlaylist: true, order: list})
         setUrlParams([["list", null], ["order", list.toString().replace(/^\[|]$/, "")]])
     }
 
@@ -374,6 +381,18 @@ class App extends Component<{}, state> {
         window.location.reload()
     }
 
+    private shufflePlaylist = () => {
+        let newOrder: number[]
+        // Shuffle the playlist
+        if (this.state.order !== undefined) {
+            newOrder = shuffle(this.state.order)
+        } else {
+            newOrder = shuffle(this.state.playlist.list)
+        }
+
+        // Load the list
+        this.loadCustomList(newOrder)
+    }
 }
 
 export default App;
