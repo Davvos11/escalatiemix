@@ -45,30 +45,33 @@ class SortableBar extends Component<props, state> {
     render() {
         const list = this.state.list.slice(0, this.props.mixes.length)
 
-        return <div className={styles.barWrapper} data-dragging={this.state.dragging}>
-            <ReactSortable className={`${styles.bar} ${styles.sortableBar}`}
-                           dragClass={styles.draggingItem}
-                           ghostClass={styles.ghostItem}
-                           list={this.state.list}
-                           setList={this.onUpdate}
-                           onStart={() => this.setState({dragging: true})}
-                           onEnd={() => this.setState({dragging: false})}
-            >
-                {list.map((item, index) => {
-                    const mix = this.props.mixes[item.id]
+        return (<>
+            <div className={styles.barWrapper} data-dragging={this.state.dragging}>
+                <ReactSortable className={`${styles.bar} ${styles.sortableBar}`}
+                               dragClass={styles.draggingItem}
+                               ghostClass={styles.ghostItem}
+                               list={this.state.list}
+                               setList={this.onUpdate}
+                               onStart={() => this.setState({dragging: true})}
+                               onEnd={() => this.setState({dragging: false})}
+                >
+                    {list.map((item, index) => {
+                        const mix = this.props.mixes[item.id]
 
-                    let length = 10
-                    if (mix.duration !== undefined) {
-                        length = mix.duration / this.props.duration * 100.
-                    }
+                        let length = 10
+                        if (mix.duration !== undefined) {
+                            length = mix.duration / this.props.duration * 100.
+                        }
 
-                    return <div style={{width: length + "%"}} key={index}
-                    >
-                        {getIcon(mix)}
-                    </div>
-                })}
-            </ReactSortable>
-        </div>;
+                        return <div style={{width: length + "%"}} key={index}
+                        >
+                            {getIcon(mix)}
+                        </div>
+                    })}
+                </ReactSortable>
+            </div>
+            <i style={{fontSize: "1.2em"}}>Sleep de icoontjes om de volgorde aan te passen</i>
+        </>);
     }
 
     private getList = () => {
