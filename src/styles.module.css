@@ -23,18 +23,22 @@
     margin-bottom: 1em;
 }
 
-.back {
+.topButtons {
     position: absolute;
     top: 4vh;
     left: 4vh;
     z-index: 100;
+    display: flex;
 }
 
-.share {
-    position: absolute;
-    top: 4vh;
-    left: calc(4vh + 50px);
-    z-index: 100;
+.topButtons * {
+    margin-right: 10px;
+    width: 40px;
+}
+
+.icon {
+    height: 1em;
+    width: 1em;
 }
 
 .albumArt {
@@ -213,5 +217,17 @@ h1 {
 @media screen and (min-height: 730px){
     .scheduleWrapper {
         height: 300px;
+    }
+}
+
+.pianoManDialog {
+    width: 80vw !important;
+    max-width: unset !important;
+}
+
+@media screen and (max-width: 300px){
+    .pianoManDialog {
+        width: 100vw !important;
+        max-width: unset !important;
     }
 }

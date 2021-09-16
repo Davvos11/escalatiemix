@@ -19,9 +19,10 @@ import {ScheduleForm, ScheduleFormProps} from './ScheduleForm';
 import {playlist, playlists} from "./config";
 import SortableBar from "./SortableBar";
 import PlaylistSelect from "./PlaylistSelect";
-import {faArrowLeft, faShareAlt} from "@fortawesome/free-solid-svg-icons";
+import {faArrowLeft, faBell, faShareAlt} from "@fortawesome/free-solid-svg-icons";
 import ShareDialog from "./ShareDialog";
 import {shuffle} from "underscore";
+import PianoManDialog from "./PianoManDialog";
 
 type state = {
     mixes: mix[] | undefined,
@@ -42,7 +43,9 @@ type state = {
     playlist: playlist,
     customPlaylist: boolean,
     showShareDialog: boolean,
-    order: number[] | undefined
+    showPianoManDialog: boolean,
+    order: number[] | undefined,
+    paused: boolean
 }
 
 class App extends Component<{}, state> {
@@ -83,7 +86,9 @@ class App extends Component<{}, state> {
             playlist: list,
             customPlaylist: custom,
             showShareDialog: false,
-            order: custom ? order : undefined
+            showPianoManDialog: false,
+            order: custom ? order : undefined,
+            paused: false
         }
     }
 
@@ -129,7 +134,7 @@ class App extends Component<{}, state> {
             // Show the playlist selection
             content.push(<div key="playlist-select" className={styles.playlistSelectWrapper}>
                     <PlaylistSelect custom={this.state.customPlaylist}
-                                         selected={this.state.playlist}
+                                    selected={this.state.playlist}
                                     onChange={this.loadPlaylist}/>
                     <Button onClick={this.shufflePlaylist}>Shuffle</Button>
                 </div>
@@ -147,30 +152,49 @@ class App extends Component<{}, state> {
             )
         }
 
-        // Check if we need to show the "share" modal
-        let shareModal;
+        // Check if we need to show the "share" or "piano man" modal
+        let modal;
         if (this.state.showShareDialog) {
-            shareModal = <ShareDialog song={this.state.index}
-                                      getTime={() => this.state.elapsedInCurrentSong}
-                                      onClose={() => this.setState({showShareDialog: false})}/>
+            modal = <ShareDialog song={this.state.index}
+                                 getTime={() => this.state.elapsedInCurrentSong}
+                                 onClose={() => this.setState({showShareDialog: false})}/>
+        } else if (this.state.showPianoManDialog) {
+            modal = <PianoManDialog
+                onClose={(resume) => {
+                    this.setState({showPianoManDialog: false})
+                    if (resume) {
+                        this.setState({paused: false})
+                    }
+                }}
+                onStart={() => this.setState({paused: true})}
+            />
         } else {
-            shareModal = null;
+            modal = null;
         }
 
         // Get the current mix
         const mix = this.state.mixes[this.state.index]
 
         return <Container fluid className={styles.container}>
-            <Button aria-label="back" className={styles.back}
-                    onClick={this.backToHome}>
-                <FontAwesomeIcon icon={faArrowLeft}/>
-            </Button>
-            <Button aria-label="share" className={styles.share}
-                    onClick={() => this.setState({showShareDialog: true})}>
-                <FontAwesomeIcon icon={faShareAlt}/>
-            </Button>
+            <div className={styles.topButtons}>
+                <Button aria-label="back"
+                        onClick={this.backToHome}>
+                    <FontAwesomeIcon icon={faArrowLeft}/>
+                </Button>
+                <Button aria-label="share" className={styles.share}
+                        onClick={() => this.setState({showShareDialog: true})}>
+                    <FontAwesomeIcon icon={faShareAlt}/>
+                </Button>
+                <Button aria-label="piano-man"
+                        onClick={() => this.setState({showPianoManDialog: true})}>
+                    <img src={process.env.PUBLIC_URL + "/piano.svg"}  alt="piano man"
+                         className={styles.icon} style={{filter: "invert(100%)"}}/>
+                </Button>
+            </div>
             <Player img={mix.img} title={mix.title} filename={mix.filename}
-                    onChange={this.onPlayerChange} emitTime={this.onTimeChange}/>
+                    onChange={this.onPlayerChange} emitTime={this.onTimeChange}
+                    paused={this.state.paused}
+            />
 
             <div className={styles.times}>
                 <h1>{this.secsToTime(this.state.elapsed)}</h1>
@@ -183,7 +207,7 @@ class App extends Component<{}, state> {
                  duration={this.state.duration}
                  elapsed={this.state.elapsed}/>
 
-            {shareModal}
+            {modal}
         </Container>
 
     }

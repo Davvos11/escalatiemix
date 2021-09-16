@@ -13,6 +13,7 @@ type props = {
     filename: string,
     onChange: (change: change) => void,
     emitTime: (time: number) => void,
+    paused: boolean
 }
 
 export enum change {
@@ -26,7 +27,7 @@ class Player extends Component<props, state> {
         super(props);
 
         this.state = {
-            paused: false,
+            paused: props.paused,
             error: null
         }
 
@@ -57,20 +58,28 @@ class Player extends Component<props, state> {
         </>
     }
 
+    private play = async () => {
+        await this.audio.play()
+        this.setState({
+            paused: false,
+            error: null
+        })
+    }
+
+    private pause = async () => {
+        this.audio.pause()
+        this.setState({
+            paused: true,
+            error: null
+        })
+    }
+
     private toggle = async () => {
         try {
             if (this.audio.paused) {
-                await this.audio.play()
-                this.setState({
-                    paused: false,
-                    error: null
-                })
+                await this.play();
             } else {
-                this.audio.pause()
-                this.setState({
-                    paused: true,
-                    error: null
-                });
+                await this.pause();
             }
         } catch (e) {
             console.error(e, e.name)
@@ -121,7 +130,16 @@ class Player extends Component<props, state> {
             // Change the source
             this.audio.src = this.props.filename
             // Start playing
-            return this.start();
+            await this.start();
+        }
+        // Check if we need to toggle the play state
+        if (prevProps.paused !== this.props.paused) {
+            if (this.props.paused) {
+                await this.pause()
+            } else {
+                await this.play()
+            }
+            this.setState({paused: this.props.paused})
         }
     }
 
@@ -132,7 +150,9 @@ class Player extends Component<props, state> {
     }
 
     private async start() {
-        await this.toggle();
+        if (!this.props.paused) {
+            await this.play();
+        }
         this.props.onChange(change.Play)
     }
 }
