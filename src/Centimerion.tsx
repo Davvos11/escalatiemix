@@ -23,7 +23,7 @@ export class Centimerion extends Component<CentimerionFormProps, state> {
 
 
         this.state = {
-            time: "00:00:05",
+            time: "00:20:00",
             expanded: false
         };
     }

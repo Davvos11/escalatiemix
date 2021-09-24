@@ -53,7 +53,28 @@ class Player extends Component<props, state> {
     }
 
     private play = async () => {
-        await this.audio.play()
+        try {
+            await this.audio.play()
+        } catch (e) {
+            console.error(e, e.name)
+
+            if (e.name === "NotAllowedError") {
+                this.setState({
+                    paused: true,
+                    error: 'Autoplay is niet toegestaan, klik op de play knop om te starten.'
+                });
+            } else if (e.name === "AbortError" && !this.audio.paused) {
+                /*
+                 In Chrome, for some reason the player will emit the following error:
+                 The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
+                 However the audio does start playing correctly, therefore we just ignore this error :)
+                */
+            } else {
+                this.setState({
+                    error: e.message
+                });
+            }
+        }
         this.setState({
             paused: false,
             error: null
@@ -69,32 +90,10 @@ class Player extends Component<props, state> {
     }
 
     private toggle = async () => {
-        try {
-            if (this.audio.paused) {
-                await this.play();
-            } else {
-                await this.pause();
-            }
-        } catch (e) {
-            console.error(e, e.name)
-
-            if (e.name === "NotAllowedError") {
-                this.setState({
-                    paused: true,
-                    error: 'Autoplay is niet toegestaan, klik op de play knop om te starten.'
-                });
-            }
-            else if (e.name === "AbortError" && !this.audio.paused) {
-                /*
-                 In Chrome, for some reason the player will emit the following error:
-                 The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
-                 However the audio does start playing correctly, therefore we just ignore this error :)
-                */
-            } else {
-                this.setState({
-                    error: e.message
-                });
-            }
+        if (this.audio.paused) {
+            await this.play();
+        } else {
+            await this.pause();
         }
     }
 

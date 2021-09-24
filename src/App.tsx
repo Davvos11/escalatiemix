@@ -55,10 +55,11 @@ class App extends Component<{}, state> {
     constructor(props: Readonly<{}>) {
         super(props);
 
-        // Get the starting song and/or playlist from the url
+        // Get url parameters
         const index = getUrlParamInt('song')
         const startTime = getUrlParamInt('t')
         const order = getUrlParamIntArray('order')
+
         let list;
         let custom = false;
 
@@ -239,6 +240,10 @@ class App extends Component<{}, state> {
             this.resizeIcons()
         })
 
+        const centimerionDuration = getUrlParamInt('centimerion')
+        if (centimerionDuration !== 0) {
+            this.startCentimerion(centimerionDuration)
+        }
         if (this.state.autoStart) {
             this.setState({
                 started: true
@@ -434,10 +439,16 @@ class App extends Component<{}, state> {
         setUrlParams([["list", null], ["order", list.toString().replace(/^\[|]$/, "")]])
     }
 
+    private loadCentimerionList = (list: number[], duration: number) => {
+        const playlist = {name: "Centimerion", list: list}
+        this.setState({playlist: playlist, customPlaylist: true, order: list})
+        setUrlParams([["list", null], ["order", null], ["centimerion", duration.toString()]])
+    }
+
     private backToHome = () => {
         // Remove the autostart, song and time parameters from the URL
         setUrlParams([
-            ["autostart", null], ["song", null], ["t", null]
+            ["autostart", null], ["song", null], ["t", null], ["centimerion", null]
         ])
         // Reload the page
         window.location.reload()
@@ -460,19 +471,23 @@ class App extends Component<{}, state> {
         event.preventDefault();
 
         const duration = moment.duration(values.time).asSeconds()
+        this.startCentimerion(duration)
+    }
+
+    private startCentimerion = (duration: number) => {
         // Calculate the amount of centurions
         const centurionCount = duration / centurionLength
         const centurionNumber = Math.ceil(centurionCount)
         // Calculate the start time of the first centurion
         const startAt = centurionLength - (centurionCount % 1) * centurionLength
+        this.setState({centimerionTime: startAt})
 
         // Create a playlist (16 is the intro, 17 the middle and 18 the ending of centurion)
         const list = [16, ...(Array(centurionNumber).fill(17)), 18]
-        this.loadCustomList(list)
+        this.loadCentimerionList(list, duration)
 
         // Start playing
-        //FIXME start time weghalen SUKKOL
-        this.setState({centimerionTime: startAt, started: true, startTime: 40})
+        this.setState({started: true})
     }
 }
 
