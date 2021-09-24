@@ -31,6 +31,10 @@ export const files:file[] = [
     {number: undefined, icon: faSkiing,  filename: "mixes/Gebroeders Scooter - Totale Eskilatie-GebroedersScooter_gebroeders-scooter-totale-eskilatie.m4a", duration: 3944.2278458049886, title: "Gebroeders Scooter - Totale Eskilatie"},
     {number: 10, icon: undefined, filename: "mixes/Gebroeders Scooter - Totale EscalaTIEN-GebroedersScooter_gebroeders-scooter-totale-escalatien.m4a", duration: 3635.309569160998, title: "Gebroeders Scooter - Totale EscalaTIEN"},
     {number: undefined, icon: faVirus,  filename: "mixes/Gebroeders Scooter - Totale Isolatie-GebroedersScooter_gebroeders-scooter-totale-isolatie.m4a", duration: 4078.4856235827665, title: "Gebroeders Scooter - Totale Isolatie"},
+
+    /*16*/{number: undefined, icon: undefined, filename: "centimerion/start.m4a", duration: 43.74, title: "Gebroeders Scooter - Totale Escalatie Centurion"},
+    /*17*/{number: undefined, icon: faBullhorn, filename: "centimerion/middle.m4a", duration: 5979.132, title: "Gebroeders Scooter - Totale Escalatie Centurion"},
+    /*18*/{number: undefined, icon: undefined, filename: "centimerion/end.m4a", duration: 51.651, title: "Gebroeders Scooter - Totale Escalatie Centurion"},
 ]
 
 export const playlists:playlist[] = [
@@ -39,3 +43,5 @@ export const playlists:playlist[] = [
     {name: "Chronologisch (centurion als laatste)", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 11]},
     {name: "Chronologisch", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]},
 ]
+
+export const centurionLength = files[17].duration

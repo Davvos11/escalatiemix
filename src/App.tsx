@@ -16,13 +16,14 @@ import styles from './styles.module.css';
 import Player, {change} from './Player';
 import Bar from './Bar';
 import {ScheduleForm, ScheduleFormProps} from './ScheduleForm';
-import {playlist, playlists} from "./config";
+import {centurionLength, playlist, playlists} from "./config";
 import SortableBar from "./SortableBar";
 import PlaylistSelect from "./PlaylistSelect";
 import {faArrowLeft, faBell, faShareAlt} from "@fortawesome/free-solid-svg-icons";
 import ShareDialog from "./ShareDialog";
 import {shuffle} from "underscore";
 import PianoManDialog from "./PianoManDialog";
+import {Centimerion, CentimerionFormProps, CentimerionFormValues} from "./Centimerion";
 
 type state = {
     mixes: mix[] | undefined,
@@ -45,7 +46,9 @@ type state = {
     showShareDialog: boolean,
     showPianoManDialog: boolean,
     order: number[] | undefined,
-    paused: boolean
+    paused: boolean,
+    centimerionTime: number | undefined
+    startTime: number
 }
 
 class App extends Component<{}, state> {
@@ -54,6 +57,7 @@ class App extends Component<{}, state> {
 
         // Get the starting song and/or playlist from the url
         const index = getUrlParamInt('song')
+        const startTime = getUrlParamInt('t')
         const order = getUrlParamIntArray('order')
         let list;
         let custom = false;
@@ -88,7 +92,9 @@ class App extends Component<{}, state> {
             showShareDialog: false,
             showPianoManDialog: false,
             order: custom ? order : undefined,
-            paused: false
+            paused: false,
+            centimerionTime: undefined,
+            startTime
         }
     }
 
@@ -116,7 +122,10 @@ class App extends Component<{}, state> {
                             Start nu
                         </Button>
 
-                        <ScheduleForm className="my-3" onSubmit={this.handleScheduleSubmit}/>
+                        <div className={styles.dropdownWrapper}>
+                            <Centimerion onSubmit={this.handleCentimerionSubmit}/>
+                            <ScheduleForm className="my-3" onSubmit={this.handleScheduleSubmit}/>
+                        </div>
                     </Fragment>
                 );
             } else {
@@ -187,13 +196,13 @@ class App extends Component<{}, state> {
                 </Button>
                 <Button aria-label="piano-man"
                         onClick={() => this.setState({showPianoManDialog: true})}>
-                    <img src={process.env.PUBLIC_URL + "/piano.svg"}  alt="piano man"
+                    <img src={process.env.PUBLIC_URL + "/piano.svg"} alt="piano man"
                          className={styles.icon} style={{filter: "invert(100%)"}}/>
                 </Button>
             </div>
-            <Player img={mix.img} title={mix.title} filename={mix.filename}
+            <Player img={mix.img} title={mix.title} filename={mix.filename} index={this.state.index}
                     onChange={this.onPlayerChange} emitTime={this.onTimeChange}
-                    paused={this.state.paused}
+                    paused={this.state.paused} startTime={this.state.startTime}
             />
 
             <div className={styles.times}>
@@ -205,7 +214,9 @@ class App extends Component<{}, state> {
             <Bar mixes={this.state.mixes}
                  onClick={this.loadSong}
                  duration={this.state.duration}
-                 elapsed={this.state.elapsed}/>
+                 elapsed={this.state.elapsed}
+                 centimerionTime={this.state.centimerionTime}
+            />
 
             {modal}
         </Container>
@@ -269,6 +280,9 @@ class App extends Component<{}, state> {
         mixes.forEach(mix => {
             duration += mix.duration
         })
+        if (this.state.centimerionTime !== undefined) {
+            duration -= this.state.centimerionTime
+        }
         this.setState({duration: duration})
         // Load the first song
         this.loadSong(this.state.index);
@@ -328,6 +342,15 @@ class App extends Component<{}, state> {
         if (type === change.Finish) {
             // Load the next song
             if (this.state.index + 1 < this.state.loadingTotal) {
+                // If we are doing centimerion and we are now loading the second "song"
+                // i.e. the middle part of centurion, skip to the calculated time
+                if (this.state.centimerionTime !== undefined && this.state.index === 0) {
+                    // Change the starting time of the next song
+                    this.setState({startTime: this.state.centimerionTime})
+                } else if (this.state.startTime !== 0)  {
+                    // Reset the starting time if it was set for the previous song
+                    this.setState({startTime: 0})
+                }
                 this.setState({index: this.state.index + 1})
                 this.loadSong(this.state.index)
             }
@@ -335,8 +358,23 @@ class App extends Component<{}, state> {
     }
 
     private onTimeChange = (time: number) => {
-        const elapsed = this.state.elapsedFinished + time
-        const left = Math.max(0, this.state.duration - this.state.elapsed)
+        let elapsed = this.state.elapsedFinished + time
+        let left = Math.max(0, this.state.duration - this.state.elapsed)
+
+        if (this.state.centimerionTime !== undefined) {
+            // During the intro of centimerion, the elapsed time is normal,
+            // but we need to change the time left
+            if (this.state.index === 0) {
+                elapsed = this.state.elapsedFinished + time
+                left = Math.max(0, this.state.duration - this.state.elapsed - this.state.centimerionTime)
+            } else {
+                // During the rest, we need to subtract the skipped time from the elapsed time,
+                // but the time left can be calculated normally
+                elapsed = this.state.elapsedFinished + time - this.state.centimerionTime
+                left = Math.max(0, this.state.duration - this.state.elapsed)
+            }
+        }
+
         const eta = new Date((new Date()).getTime() + left * 1000)
         this.setState({elapsed, left, eta, elapsedInCurrentSong: time})
     }
@@ -416,6 +454,25 @@ class App extends Component<{}, state> {
 
         // Load the list
         this.loadCustomList(newOrder)
+    }
+
+    private handleCentimerionSubmit: CentimerionFormProps['onSubmit'] = (values, event) => {
+        event.preventDefault();
+
+        const duration = moment.duration(values.time).asSeconds()
+        // Calculate the amount of centurions
+        const centurionCount = duration / centurionLength
+        const centurionNumber = Math.ceil(centurionCount)
+        // Calculate the start time of the first centurion
+        const startAt = centurionLength - (centurionCount % 1) * centurionLength
+
+        // Create a playlist (16 is the intro, 17 the middle and 18 the ending of centurion)
+        const list = [16, ...(Array(centurionNumber).fill(17)), 18]
+        this.loadCustomList(list)
+
+        // Start playing
+        //FIXME start time weghalen SUKKOL
+        this.setState({centimerionTime: startAt, started: true, startTime: 40})
     }
 }
 

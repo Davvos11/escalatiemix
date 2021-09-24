@@ -9,6 +9,7 @@ type props = {
     duration: number
     elapsed: number
     onClick: (index: number) => void
+    centimerionTime: number | undefined
 }
 type state = {}
 
@@ -26,9 +27,14 @@ class Bar extends Component<props, state> {
             <div className={`${styles.bar} ${styles.progress}`} style={{width: width}}>placeholder</div>
             <div className={styles.bar}>
                 {this.props.mixes.map((mix, index) => {
+                    let duration = mix.duration
+                    if (this.props.centimerionTime !== undefined && index === 1) {
+                        duration -= this.props.centimerionTime
+                    }
+
                     let length = 10
-                    if (mix.duration !== undefined) {
-                        length = mix.duration / this.props.duration * 100.
+                    if (duration !== undefined) {
+                        length = duration / this.props.duration * 100.
                     }
 
                     return <div style={{width: length + "%"}}

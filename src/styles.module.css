@@ -206,16 +206,16 @@ h1 {
     text-align: center;
 }
 
-.scheduleWrapper {
+.dropdownWrapper {
     min-height: 10vh;
 }
 
-.scheduleWrapper button {
+.dropdownWrapper button {
     margin-bottom: 2vh;
 }
 
 @media screen and (min-height: 730px){
-    .scheduleWrapper {
+    .dropdownWrapper {
         height: 300px;
     }
 }
@@ -230,4 +230,8 @@ h1 {
         width: 100vw !important;
         max-width: unset !important;
     }
+}
+
+.centimerionWrapper {
+    margin-bottom: 10px;
 }

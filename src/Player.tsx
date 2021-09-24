@@ -11,9 +11,11 @@ type props = {
     img: string,
     title: string,
     filename: string,
+    index: number,
     onChange: (change: change) => void,
     emitTime: (time: number) => void,
     paused: boolean
+    startTime: number
 }
 
 export enum change {
@@ -33,16 +35,8 @@ class Player extends Component<props, state> {
 
         this.audio = new Audio(this.props.filename)
 
-        // Get the starting time from the url
-        const query = window.location.search
-        const params = new URLSearchParams(query)
-        const timeStr = params.get('t')
-        let time = 0;
-        if (timeStr !== null) {
-            time = parseInt(timeStr)
-        }
         // Change the starting point
-        this.audio.currentTime = time
+        this.audio.currentTime = props.startTime
     }
 
     render() {
@@ -125,10 +119,12 @@ class Player extends Component<props, state> {
     }
 
     async componentDidUpdate(prevProps: Readonly<props>, prevState: Readonly<state>, snapshot?: any) {
-        // Check if the filename has changed
-        if (prevProps.filename !== this.props.filename) {
+        // Check if the playlist index has changed
+        if (prevProps.index !== this.props.index) {
             // Change the source
             this.audio.src = this.props.filename
+            // Change the starting point
+            this.audio.currentTime = this.props.startTime
             // Start playing
             await this.start();
         }

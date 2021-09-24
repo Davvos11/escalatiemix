@@ -20,7 +20,7 @@ export const getMixes = async (onProgress: (part: number, total: number) => void
 
     for (let i = 0; i < files.length; i++){
         const file = files[i];
-        const img = file.filename.replace(/.m4a\s*$/i, ".png")
+        const img = file.filename.replace(/\.\S+$/i, ".png")
 
         // Save the results
         result.push({
