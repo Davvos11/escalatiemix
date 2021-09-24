@@ -52,6 +52,8 @@ type state = {
 }
 
 class App extends Component<{}, state> {
+    private readonly airhornAudio: HTMLAudioElement;
+
     constructor(props: Readonly<{}>) {
         super(props);
 
@@ -97,6 +99,14 @@ class App extends Component<{}, state> {
             centimerionTime: undefined,
             startTime
         }
+
+        this.airhornAudio = new Audio("toeter.ogg")
+
+        // Add an airhorn whenever the skip event fires
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            this.airhornAudio.currentTime = 0
+            this.airhornAudio.play().then()
+        })
     }
 
     private mixes: mix[] | undefined = undefined

@@ -1,6 +1,5 @@
 {
   "name": "escalatiemix",
-
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -52,6 +51,7 @@
   },
   "devDependencies": {
     "@types/sortablejs": "^1.10.7",
-    "@types/underscore": "^1.11.3"
+    "@types/underscore": "^1.11.3",
+    "@types/wicg-mediasession": "^1.1.3"
   }
 }
