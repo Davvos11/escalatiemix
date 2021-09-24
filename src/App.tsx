@@ -367,13 +367,8 @@ class App extends Component<{}, state> {
         let left = Math.max(0, this.state.duration - this.state.elapsed)
 
         if (this.state.centimerionTime !== undefined) {
-            // During the intro of centimerion, the elapsed time is normal,
-            // but we need to change the time left
-            if (this.state.index === 0) {
-                elapsed = this.state.elapsedFinished + time
-                left = Math.max(0, this.state.duration - this.state.elapsed - this.state.centimerionTime)
-            } else {
-                // During the rest, we need to subtract the skipped time from the elapsed time,
+            if (this.state.index !== 0) {
+                // During the songs after the intro of centimerion, we need to subtract the skipped time from the elapsed time,
                 // but the time left can be calculated normally
                 elapsed = this.state.elapsedFinished + time - this.state.centimerionTime
                 left = Math.max(0, this.state.duration - this.state.elapsed)

@@ -171,7 +171,17 @@ h1 {
 
 @media screen and (min-width: 576px) {
     .forms {
-        width: 300px;
+        width: 400px;
+    }
+
+    .centimerionWrapper .inputWrapper {
+        display: flex;
+        justify-content: center;
+    }
+
+    .centimerionWrapper .inputWrapper div{
+        width: 50% !important;
+        display: block;
     }
 }
 
@@ -180,7 +190,7 @@ h1 {
 }
 
 .forms {
-    margin-bottom: 4vh;
+    margin-bottom: 1vh;
 }
 
 .playlistSelectWrapper {
@@ -216,7 +226,7 @@ h1 {
 
 @media screen and (min-height: 730px){
     .dropdownWrapper {
-        height: 300px;
+        min-height: 300px;
     }
 }
 
@@ -230,8 +240,4 @@ h1 {
         width: 100vw !important;
         max-width: unset !important;
     }
-}
-
-.centimerionWrapper {
-    margin-bottom: 10px;
 }
