@@ -19,11 +19,11 @@ import {ScheduleForm, ScheduleFormProps} from './ScheduleForm';
 import {centurionLength, playlist, playlists} from "./config";
 import SortableBar from "./SortableBar";
 import PlaylistSelect from "./PlaylistSelect";
-import {faArrowLeft, faBell, faShareAlt} from "@fortawesome/free-solid-svg-icons";
+import {faArrowLeft, faShareAlt} from "@fortawesome/free-solid-svg-icons";
 import ShareDialog from "./ShareDialog";
 import {shuffle} from "underscore";
 import PianoManDialog from "./PianoManDialog";
-import {Centimerion, CentimerionFormProps, CentimerionFormValues} from "./Centimerion";
+import {Centimerion, CentimerionFormProps} from "./Centimerion";
 
 type state = {
     mixes: mix[] | undefined,
@@ -444,10 +444,12 @@ class App extends Component<{}, state> {
         setUrlParams([["list", null], ["order", list.toString().replace(/^\[|]$/, "")]])
     }
 
-    private loadCentimerionList = (list: number[], duration: number) => {
-        const playlist = {name: "Centimerion", list: list}
-        this.setState({playlist: playlist, customPlaylist: true, order: list})
-        setUrlParams([["list", null], ["order", null], ["centimerion", duration.toString()]])
+    private loadCentimerionList = async (list: number[], duration: number) => {
+        return new Promise((resolve => {
+            const playlist = {name: "Centimerion", list: list}
+            setUrlParams([["list", null], ["order", null], ["centimerion", duration.toString()]])
+            this.setState({playlist: playlist, customPlaylist: true, order: list}, () => resolve(null))
+        }))
     }
 
     private backToHome = () => {
@@ -479,7 +481,7 @@ class App extends Component<{}, state> {
         this.startCentimerion(duration)
     }
 
-    private startCentimerion = (duration: number) => {
+    private startCentimerion = async (duration: number) => {
         // Calculate the amount of centurions
         const centurionCount = duration / centurionLength
         const centurionNumber = Math.ceil(centurionCount)
@@ -489,7 +491,7 @@ class App extends Component<{}, state> {
 
         // Create a playlist (16 is the intro, 17 the middle and 18 the ending of centurion)
         const list = [16, ...(Array(centurionNumber).fill(17)), 18]
-        this.loadCentimerionList(list, duration)
+        await this.loadCentimerionList(list, duration)
 
         // Start playing
         this.setState({started: true})

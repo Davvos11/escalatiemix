@@ -1,7 +1,5 @@
 import {Component} from "react";
-import {Button, FormControl, FormGroup, Modal} from "react-bootstrap";
-import {generateUrlParams} from "./functions";
-import {inspect} from "util";
+import {Button, Modal} from "react-bootstrap";
 import styles from './styles.module.css';
 
 type props = {

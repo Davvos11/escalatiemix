@@ -1,6 +1,5 @@
 import {Component} from 'react';
 import {Button, Col, Collapse, Form, FormProps, Row} from 'react-bootstrap';
-import moment from 'moment';
 
 import styles from './styles.module.css';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
