@@ -356,7 +356,7 @@ class App extends Component<{}, state> {
     private onPlayerChange = (type: change) => {
         if (type === change.Finish) {
             // Load the next song
-            if (this.state.index + 1 < this.state.loadingTotal) {
+            if (this.state.index + 1 < this.state.playlist.list.length) {
                 // If we are doing centimerion and we are now loading the second "song"
                 // i.e. the middle part of centurion, skip to the calculated time
                 if (this.state.centimerionTime !== undefined && this.state.index === 0) {
