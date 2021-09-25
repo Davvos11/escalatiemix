@@ -353,7 +353,7 @@ class App extends Component<{}, state> {
         this.setState({index: index, elapsedFinished: elapsed});
     }
 
-    private onPlayerChange = (type: change) => {
+    private onPlayerChange = async (type: change) => {
         if (type === change.Finish) {
             // Load the next song
             if (this.state.index + 1 < this.state.playlist.list.length) {
@@ -361,12 +361,12 @@ class App extends Component<{}, state> {
                 // i.e. the middle part of centurion, skip to the calculated time
                 if (this.state.centimerionTime !== undefined && this.state.index === 0) {
                     // Change the starting time of the next song
-                    this.setState({startTime: this.state.centimerionTime})
-                } else if (this.state.startTime !== 0)  {
+                    await this.asyncSetState({startTime: this.state.centimerionTime})
+                } else if (this.state.startTime !== 0) {
                     // Reset the starting time if it was set for the previous song
-                    this.setState({startTime: 0})
+                    await this.asyncSetState({startTime: 0})
                 }
-                this.setState({index: this.state.index + 1})
+                await this.asyncSetState({index: this.state.index + 1})
                 this.loadSong(this.state.index)
             }
         }
@@ -445,11 +445,9 @@ class App extends Component<{}, state> {
     }
 
     private loadCentimerionList = async (list: number[], duration: number) => {
-        return new Promise((resolve => {
-            const playlist = {name: "Centimerion", list: list}
-            setUrlParams([["list", null], ["order", null], ["centimerion", duration.toString()]])
-            this.setState({playlist: playlist, customPlaylist: true, order: list}, () => resolve(null))
-        }))
+        const playlist = {name: "Centimerion", list: list}
+        setUrlParams([["list", null], ["order", null], ["centimerion", duration.toString()]])
+        await this.asyncSetState({playlist: playlist, customPlaylist: true, order: list})
     }
 
     private backToHome = () => {
@@ -487,7 +485,7 @@ class App extends Component<{}, state> {
         const centurionNumber = Math.ceil(centurionCount)
         // Calculate the start time of the first centurion
         const startAt = centurionLength - (centurionCount % 1) * centurionLength
-        this.setState({centimerionTime: startAt})
+        await this.asyncSetState({centimerionTime: startAt})
 
         // Create a playlist (16 is the intro, 17 the middle and 18 the ending of centurion)
         const list = [16, ...(Array(centurionNumber).fill(17)), 18]
@@ -495,6 +493,13 @@ class App extends Component<{}, state> {
 
         // Start playing
         this.setState({started: true})
+    }
+
+    // Type shouldn't be "any" but I'm too lazy to fix it with the correct type
+    private asyncSetState = async (state: any) => {
+        return new Promise(resolve => {
+            this.setState(state, () => resolve(null))
+        })
     }
 }
 
