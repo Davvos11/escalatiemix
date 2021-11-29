@@ -52,7 +52,10 @@ class Bar extends Component<props, state> {
 export const getIcon = (mix: mix) => {
     let text;
     if (mix.icon !== undefined) {
-        text = <FontAwesomeIcon icon={mix.icon}/>
+        text = [<FontAwesomeIcon icon={mix.icon}/>]
+        if (mix.number !== undefined) {
+            text = [...text, <span style={{width: "5px"}}/>, <sup>{mix.number}</sup>]
+        }
     } else if (mix.number !== undefined) {
         text = mix.number
     }

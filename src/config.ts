@@ -35,13 +35,16 @@ export const files:file[] = [
     /*16*/{number: undefined, icon: undefined, filename: "centimerion/start.m4a", duration: 43.74, title: "Gebroeders Scooter - Totale Escalatie Centurion"},
     /*17*/{number: undefined, icon: faBullhorn, filename: "centimerion/middle.m4a", duration: 5979.132, title: "Gebroeders Scooter - Totale Escalatie Centurion"},
     /*18*/{number: undefined, icon: undefined, filename: "centimerion/end.m4a", duration: 51.651, title: "Gebroeders Scooter - Totale Escalatie Centurion"},
+
+    {number: 2, icon: faBullhorn, filename: "mixes/Gebroeders Scooter - Totale Escalatie Centurion 2.0-GebroedersScooter_gebroeders-scooter-totale-escalatie-centurion-20.m4a", duration: 6161.653, title: "Gebroeders Scooter - Totale Escalatie Centurion 2.0"}
 ]
 
 export const playlists:playlist[] = [
-    {name: "Nice volgorde", list: [11, 14, 9, 15, 7, 8, 12, 2, 10, 5, 6, 3, 1, 0, 13, 4]},
-    {name: "Alleen nice mixen", list: [11, 14, 9, 15, 7, 8, 12, 2, 10]},
-    {name: "Chronologisch (centurion als laatste)", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 11]},
-    {name: "Chronologisch", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]},
+    {name: "Nice volgorde", list: [11, 14, 19, 9, 15, 7, 8, 12, 2, 10, 5, 6, 3, 1, 0, 13, 4]},
+    {name: "Alleen nice mixen", list: [11, 14, 19, 9, 15, 7, 8, 12, 2, 10]},
+    {name: "Chronologisch (centurion als laatste)", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 11, 19]},
+    {name: "Chronologisch", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 19]},
+    {name: "Centurioni", list: [11, 19]}
 ]
 
 export const centurionLength = files[17].duration
