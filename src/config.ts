@@ -48,3 +48,42 @@ export const playlists:playlist[] = [
 ]
 
 export const centurionLength = files[17].duration
+
+export type Container = {
+    name: string
+    capacity: number
+    empty_img: string | undefined
+    full_img: string | undefined
+    top: number
+    bottom: number
+    height: number
+}
+
+export const containers: Container[] = [
+    {
+        name: "Shotglas", capacity: 35,
+        empty_img: "containers/shot-empty.png",
+        full_img: "containers/shot-full.png",
+        top: 37, bottom: 507, height: 700
+    },
+    {
+        name: "Stapelglas", capacity: 200,
+        empty_img: "containers/stapel-empty.png",
+        full_img: "containers/stapel-full.png",
+        top: 10, bottom: 379, height: 414
+    },
+    {name: "Amsterdammer", capacity: 250, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
+    {name: "Flesje", capacity: 300, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
+    {name: "Beugel", capacity: 450, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
+    {name: "Pul 0.4L", capacity: 400, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
+    {name: "Pul 0.5L", capacity: 500, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
+    {name: "Pitcher", capacity: 1500, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
+]
+
+export const toeters: number[] = [
+    1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105
+]
+
+// export const toeters: number[] = [
+//     1, 5, 10
+// ]

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .container {
+            height: 500px;
+            background: #65BBCC;
+        }
+
+        .toolie {
+            position: relative;
+            height: 80%;
+        }
+
+        .empty {
+            position: absolute;
+            height: 20%;
+            overflow: hidden;
+        }
+
+        .empty img {
+            height: 500%;
+        }
+
+        .full {
+            position: absolute;
+            height: 80%;
+            overflow: hidden;
+            bottom: 0;
+        }
+
+        .full img {
+            position: relative;
+            top:   -25%;
+            height: 125%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="toolie">
+        <div class="empty">
+            <img src="containers/shot-empty.png">
+        </div>
+        <div class="full">
+            <img src="containers/shot-full.png">
+        </div>
+    </div>
+</div>
+</body>
+</html>

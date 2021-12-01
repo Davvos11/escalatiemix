@@ -16,7 +16,7 @@ import styles from './styles.module.css';
 import Player, {change} from './Player';
 import Bar from './Bar';
 import {ScheduleForm, ScheduleFormProps} from './ScheduleForm';
-import {centurionLength, playlist, playlists} from "./config";
+import {centurionLength, playlist, playlists, toeters} from "./config";
 import SortableBar from "./SortableBar";
 import PlaylistSelect from "./PlaylistSelect";
 import {faArrowLeft, faShareAlt} from "@fortawesome/free-solid-svg-icons";
@@ -24,6 +24,7 @@ import ShareDialog from "./ShareDialog";
 import {shuffle} from "underscore";
 import PianoManDialog from "./PianoManDialog";
 import {Centimerion, CentimerionFormProps} from "./Centimerion";
+import Containers from "./container-display/Containers";
 
 type state = {
     mixes: mix[] | undefined,
@@ -228,6 +229,10 @@ class App extends Component<{}, state> {
                  elapsed={this.state.elapsed}
                  centimerionTime={this.state.centimerionTime}
             />
+
+            <Containers time={this.state.elapsedInCurrentSong}
+                        totalTime={this.state.mixes[this.state.index].duration}
+                        toeters={toeters} />
 
             {modal}
         </Container>

@@ -1,0 +1,65 @@
+.wrapper {
+    display: flex;
+    height: 5vh;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 40px;
+}
+
+.containerContainer {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.settingsButton {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.containerContainer div{
+    height: 100%;
+}
+
+.containerContainer img{
+    height: 100%;
+}
+
+.container {
+    display: flex;
+}
+
+.container img{
+    margin-left: 20px;
+}
+.container:first-child > div:first-child img {
+    margin-left: 0;
+}
+
+.currentContainer {
+    position: relative;
+}
+
+.current {
+    position: relative;
+    height: 100%;
+}
+
+.current .emptyPart {
+    position: relative;
+    overflow: hidden;
+}
+
+.current .fullPart {
+    position: absolute;
+    overflow: hidden;
+    bottom: 0;
+}
+
+.current .fullPart img {
+    position: relative;
+    left: 0;
+}

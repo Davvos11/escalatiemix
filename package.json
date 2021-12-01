@@ -1,6 +1,5 @@
 {
   "name": "escalatiemix",
-  "homepage": "https://dovatvis.nl/escalatie",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
