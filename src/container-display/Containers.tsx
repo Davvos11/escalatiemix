@@ -158,6 +158,7 @@ class Containers extends Component<props, state> {
         }
         if (prevState.container !== this.state.container) {
             this.updateContainers(this.state.toeterCount)
+            setTimeout(this.scrollContainers, 1000)
         }
         if (prevState.empties.length !== this.state.empties.length) {
             // If a glass has been emptied, check if we need to scroll the glasses
@@ -254,7 +255,7 @@ class Containers extends Component<props, state> {
         // Check if we need to show the indicators
         this.setState({
             showScrollLeft: scrolled > 0,
-            showScrollRight: scrolled < 1
+            showScrollRight: scrolled < 1 && width != 0
         })
     }
 }
