@@ -21,13 +21,16 @@ type state = {
     empties: JSX.Element[]
     current: JSX.Element
     fulls: JSX.Element[]
+    showScrollLeft: boolean
+    showScrollRight: boolean
 }
 
 const IDS = {
     "currentContainer": "current_container",
     "containerContainer": "containers",
     "scrollLeft": "scroll_left",
-    "scrollRight": "scroll_right"
+    "scrollRight": "scroll_right",
+    "mainWrapper": "containerWrapper",
 }
 
 class Containers extends Component<props, state> {
@@ -40,7 +43,9 @@ class Containers extends Component<props, state> {
             toeterCount: 0,
             empties: [],
             current: <></>,
-            fulls: []
+            fulls: [],
+            showScrollLeft: false,
+            showScrollRight: false,
         }
 
     }
@@ -55,23 +60,38 @@ class Containers extends Component<props, state> {
                     : null
                 }
 
-                <div className={styles.wrapper}>
-                    <div className={styles.settingsButton}>
-                        <Button aria-label="back"
-                                onClick={() => this.setState({displaySettings: true})}>
-                            <FontAwesomeIcon icon={faCog}/>
-                        </Button>
-                    </div>
-                    <div className={styles.containerContainer} id={IDS.containerContainer}>
-                        <div className={`${styles.container} ${styles.emptyContainer}`}>
-                            {this.state.empties}
-                            <div className={`${styles.container} ${styles.currentContainer}`}
-                                 id={IDS.currentContainer}>
-                                {this.state.current}
+                <div className={styles.wrapperWrapper} id={IDS.mainWrapper}>
+                    <div className={`${styles.wrapper} ${styles.containerWrapper}`}>
+                        <div className={styles.settingsButton}>
+                            <Button aria-label="back"
+                                    onClick={() => this.setState({displaySettings: true})}>
+                                <FontAwesomeIcon icon={faCog}/>
+                            </Button>
+                        </div>
+                        <div className={styles.containerContainer} id={IDS.containerContainer}>
+                            <div className={`${styles.container} ${styles.emptyContainer}`}>
+                                {this.state.empties}
+                                <div className={`${styles.container} ${styles.currentContainer}`}
+                                     id={IDS.currentContainer}>
+                                    {this.state.current}
+                                </div>
+                            </div>
+                            <div className={`${styles.container} ${styles.fullContainer}`}>
+                                {this.state.fulls}
                             </div>
                         </div>
-                        <div className={`${styles.container} ${styles.fullContainer}`}>
-                            {this.state.fulls}
+                    </div>
+                    <div className={`${styles.wrapper} ${styles.scrollWrapper}`}>
+                        <div className={styles.settingsButton} style={{visibility: "hidden"}}>
+                            <Button aria-label=""><FontAwesomeIcon icon={faCog}/></Button>
+                        </div>
+                        <div className={`${styles.containerContainer} ${styles.scrollContainer}`}>
+                            {/* Will be shown when the bar is scrolled to the right*/}
+                            <div id={IDS.scrollLeft} className={styles.scrollLeft}
+                                style={{visibility: this.state.showScrollLeft ? "unset" : "hidden"}}/>
+                            {/* Will be shown when the bar is scrolled to the left*/}
+                            <div id={IDS.scrollRight} className={styles.scrollRight}
+                                 style={{visibility: this.state.showScrollRight ? "unset" : "hidden"}}/>
                         </div>
                     </div>
                 </div>
@@ -82,6 +102,25 @@ class Containers extends Component<props, state> {
     componentDidMount() {
         // Update the amount and fullness of the containers
         this.updateContainers(this.state.toeterCount)
+
+        const container = document.getElementById(IDS.containerContainer)
+        if (container !== null) {
+            // Add a horizontal scroll functionality
+            const wrapper = document.getElementById(IDS.mainWrapper)
+            wrapper?.addEventListener("wheel", ev => {
+                ev.preventDefault()
+                container.scrollLeft += ev.deltaY
+            })
+
+            // Update the scrolling of the containers (after they have been loaded)
+            setTimeout(this.scrollContainers, 1000)
+
+            // Check if the "scroll indicators" at the right and/or left side have to be shown (on each scroll)
+            // (they are shown if there are more containers left or right, that you can see by scrolling)
+            container.addEventListener("scroll", ev => {
+                this.updateScrollIndicators()
+            })
+        }
     }
 
     componentDidUpdate(prevProps: Readonly<props>, prevState: Readonly<state>, snapshot?: any) {
@@ -196,10 +235,25 @@ class Containers extends Component<props, state> {
             block: "nearest",
             inline: "center"
         })
+        this.updateScrollIndicators()
     }
 
     private onSettingsClose = (container: Container) => {
         this.setState({container, displaySettings: false})
+    }
+
+    private updateScrollIndicators = () => {
+        const container = document.getElementById(IDS.containerContainer)
+        if (container === null)
+            return
+        // Calculate the scrolling progression
+        const width = container.scrollWidth - container.clientWidth
+        const scrolled = container.scrollLeft / width
+        // Check if we need to show the indicators
+        this.setState({
+            showScrollLeft: scrolled > 0,
+            showScrollRight: scrolled < 1
+        })
     }
 }
 
