@@ -9,6 +9,7 @@ export type mix = {
     img: string;
     title: string;
     index: number;
+    toeters: number[] | undefined
 }
 
 export const getMixes = async (onProgress: (part: number, total: number) => void) => {
@@ -30,7 +31,8 @@ export const getMixes = async (onProgress: (part: number, total: number) => void
             img: img,
             title: file.title,
             filename: file.filename,
-            index: i
+            index: i,
+            toeters: file.toeters
         })
 
         // Update the progress

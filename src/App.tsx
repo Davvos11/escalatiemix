@@ -16,7 +16,7 @@ import styles from './styles.module.css';
 import Player, {change} from './Player';
 import Bar from './Bar';
 import {ScheduleForm, ScheduleFormProps} from './ScheduleForm';
-import {centurionLength, playlist, playlists, toeters} from "./config";
+import {centurionLength, playlist, playlists} from "./config";
 import SortableBar from "./SortableBar";
 import PlaylistSelect from "./PlaylistSelect";
 import {faArrowLeft, faShareAlt} from "@fortawesome/free-solid-svg-icons";
@@ -147,7 +147,7 @@ class App extends Component<{}, state> {
 
                         <h3 className="mt-5 mb-3">Scheduled for {this.state.startAt.format('YYYY-MM-DD HH:mm')}</h3>
                         {this.state.startAtDuration &&
-                        <h3 className="my-3">Starting in {this.formatStartAtDuration()}</h3>}
+                            <h3 className="my-3">Starting in {this.formatStartAtDuration()}</h3>}
                     </Fragment>
                 );
             }
@@ -230,9 +230,11 @@ class App extends Component<{}, state> {
                  centimerionTime={this.state.centimerionTime}
             />
 
-            <Containers time={this.state.elapsedInCurrentSong}
-                        totalTime={this.state.mixes[this.state.index].duration}
-                        toeters={toeters} />
+            {mix.toeters === undefined ? null : (
+                <Containers time={this.state.elapsedInCurrentSong}
+                            totalTime={mix.duration}
+                            toeters={mix.toeters}/>
+            )}
 
             {modal}
         </Container>
