@@ -23,7 +23,12 @@ type state = {
     fulls: JSX.Element[]
 }
 
-const CURRENT_CONTAINER_ID = "current_container"
+const IDS = {
+    "currentContainer": "current_container",
+    "containerContainer": "containers",
+    "scrollLeft": "scroll_left",
+    "scrollRight": "scroll_right"
+}
 
 class Containers extends Component<props, state> {
     constructor(props: Readonly<props>) {
@@ -31,7 +36,7 @@ class Containers extends Component<props, state> {
 
         this.state = {
             displaySettings: false,
-            container: containers[1],
+            container: containers[0],
             toeterCount: 0,
             empties: [],
             current: <></>,
@@ -57,11 +62,11 @@ class Containers extends Component<props, state> {
                             <FontAwesomeIcon icon={faCog}/>
                         </Button>
                     </div>
-                    <div className={styles.containerContainer}>
+                    <div className={styles.containerContainer} id={IDS.containerContainer}>
                         <div className={`${styles.container} ${styles.emptyContainer}`}>
                             {this.state.empties}
                             <div className={`${styles.container} ${styles.currentContainer}`}
-                                 id={CURRENT_CONTAINER_ID}>
+                                 id={IDS.currentContainer}>
                                 {this.state.current}
                             </div>
                         </div>
@@ -75,6 +80,7 @@ class Containers extends Component<props, state> {
     }
 
     componentDidMount() {
+        // Update the amount and fullness of the containers
         this.updateContainers(this.state.toeterCount)
     }
 
@@ -107,7 +113,7 @@ class Containers extends Component<props, state> {
 
             if (newCount !== this.state.toeterCount)
                 this.updateContainers(newCount)
-                this.setState({toeterCount: newCount})
+            this.setState({toeterCount: newCount})
         }
         if (prevState.container !== this.state.container) {
             this.updateContainers(this.state.toeterCount)
@@ -121,16 +127,24 @@ class Containers extends Component<props, state> {
     private updateContainers = (toeterCount: number) => {
         const container = this.state.container
         const relBottom = container.height - container.bottom
-        // Calculate the total and empty amount of containers
-        let containerCount = this.props.toeters.length * (SHOTJE / this.state.container.capacity)
-        let emptyContainerCount = toeterCount * (SHOTJE / this.state.container.capacity)
-        let fullContainerCount = this.props.toeters.length * (SHOTJE / this.state.container.capacity) - emptyContainerCount
-        // Calculate how much there should be left in the current container
-        const fullness = fullContainerCount - Math.floor(fullContainerCount)
+        // Calculate the amount of total volume and containers
+        let totalVolume = this.props.toeters.length * SHOTJE
+        const totalContainers = Math.ceil((totalVolume) / container.capacity)
+        // Calculate the excess volume (i.e. the volume that should already be gone from the first container)
+        const excessVolume = totalContainers * container.capacity - totalVolume
+        // Calculate the amount of already consumed volume and containers
+        const consumedVolume = toeterCount * SHOTJE + excessVolume
+        const emptyContainers = Math.floor(consumedVolume / container.capacity)
+        // Calculate the amount of volume consumed from the current container
+        const currentConsumed = consumedVolume % container.capacity
+        const currentRemaining = container.capacity - currentConsumed
+        const fullness = currentRemaining / container.capacity
+        // Calculate the amount of full containers
+        let fullContainers = totalContainers - emptyContainers - (currentConsumed > 0 ? 1 : 0)
 
-        // Round glass counts
-        containerCount = Math.ceil(containerCount)
-        emptyContainerCount = Math.floor(emptyContainerCount)
+        // Hacky fix for if SHOTJE === container.capacity
+        fullContainers -= Math.floor(fullness)
+
         // Calculate how much of the full image should be shown
         // (taking into account that the full image is bigger than a full container)
         const imageFullness = (relBottom +
@@ -142,13 +156,12 @@ class Containers extends Component<props, state> {
         let empties = [], fulls = [];
 
         // Create arrays of empty and full containers
-        for (let i = 0; i < emptyContainerCount; i++) {
+        for (let i = 0; i < emptyContainers; i++) {
             empties.push(<div className={styles.empty}>
                 <img src={container.empty_img} alt={""}/>
             </div>)
         }
-        // We start at +1, since the current container also counts (otherwise we would have one too many)
-        for (let i = emptyContainerCount + 1; i < containerCount; i++) {
+        for (let i = 0; i < fullContainers; i++) {
             fulls.push(<div className={styles.full}>
                 <div>
                     <img src={container.full_img} alt={""}/>
@@ -158,7 +171,7 @@ class Containers extends Component<props, state> {
 
         // Create the container currently being drank
         let current = <></>
-        if (toeterCount <= this.props.toeters.length) {
+        if (fullness !== 0 && toeterCount < this.props.toeters.length) {
             current = (<div className={styles.current}>
                 <div className={styles.emptyPart} style={{height: `${imageEmptiness * 100}%`}}>
                     <img src={container.empty_img} alt={""} style={{
@@ -178,9 +191,9 @@ class Containers extends Component<props, state> {
     }
 
     private scrollContainers = () => {
-        document.getElementById(CURRENT_CONTAINER_ID)?.scrollIntoView({
+        document.getElementById(IDS.currentContainer)?.scrollIntoView({
             behavior: 'smooth',
-            block: "center",
+            block: "nearest",
             inline: "center"
         })
     }
