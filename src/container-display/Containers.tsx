@@ -6,7 +6,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCog} from "@fortawesome/free-solid-svg-icons";
 import {Button} from "react-bootstrap";
 
-const SHOTJE = 35
+export const SHOTJE = 35
 
 type props = {
     time: number
@@ -56,7 +56,9 @@ class Containers extends Component<props, state> {
                 {/* Settings modal:*/}
                 {this.state.displaySettings ?
                     <Settings selected={this.state.container}
-                              onClose={this.onSettingsClose}/>
+                              onClose={this.onSettingsClose}
+                              toeterCount={this.props.toeters.length}
+                    />
                     : null
                 }
 

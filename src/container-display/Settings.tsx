@@ -1,10 +1,12 @@
 import {Component, FormEvent} from "react";
-import {Button, FormLabel, FormSelect, Modal} from "react-bootstrap";
+import {Button, Col, Form, FormControl, FormLabel, FormSelect, Modal, Row} from "react-bootstrap";
 import {Container, containers} from "../config";
+import {SHOTJE} from "./Containers";
 
 type props = {
     onClose: (selected: Container) => void
     selected: Container
+    toeterCount: number
 }
 
 type state = {
@@ -23,20 +25,30 @@ class Settings extends Component<props, state> {
     }
 
     render() {
+        const amount = this.props.toeterCount * SHOTJE / this.state.selected.capacity
+
         return (
             <Modal show={this.state.show} onHide={this.close} onExited={this.onClose}
                    centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Delen</Modal.Title>
+                    <Modal.Title>Kies glassoort</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <FormLabel className="fw-bold">Playlist:</FormLabel>
+                    <FormLabel className="fw-bold">Glas:</FormLabel>
                     <FormSelect size="lg" onChange={this.onChange}>
                         {containers.map((list, index) => {
                             return <option key={index} selected={list === this.props.selected}>{list.name}</option>
                         })}
                     </FormSelect>
+                </Modal.Body>
+                <Modal.Body>
+                    <Row>
+                        <Col><FormLabel column>Inhoud:</FormLabel></Col>
+                        <Col><FormControl type="number" value={this.state.selected.capacity} readOnly /></Col>
+                        <Col><FormLabel column>Aantal:</FormLabel></Col>
+                        <Col><FormControl type="number" value={amount} readOnly/></Col>
+                    </Row>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={this.close} >
