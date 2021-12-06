@@ -1,5 +1,5 @@
 import {Component, FormEvent} from "react";
-import {Button, Col, Form, FormControl, FormLabel, FormSelect, Modal, Row} from "react-bootstrap";
+import {Button, Col, FormControl, FormLabel, FormSelect, Modal, Row} from "react-bootstrap";
 import {Container, containers} from "../config";
 import {SHOTJE} from "./Containers";
 
