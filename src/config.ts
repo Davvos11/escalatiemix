@@ -20,8 +20,18 @@ const toetersCenturion = [
 ]
 
 const toetersCenturion2 = [
-    10
+    123,  258,  308,  370,  430,  490,  550,  615,  674,  732,
+    787,  853,  922,  976, 1038, 1093, 1157, 1214, 1268, 1329,
+    1391, 1454, 1514, 1570, 1631, 1688, 1751, 1815, 1870, 1926,
+    1992, 2054, 2113, 2173, 2239, 2288, 2348, 2417, 2473, 2537,
+    2589, 2646, 2716, 2773, 2832, 2891, 2951, 3011, 3069, 3130,
+    3187, 3246, 3316, 3369, 3423, 3482, 3542, 3621, 3665, 3794,
+    3855, 3915, 3973, 4030, 4155, 4209, 4264, 4321, 4385, 4450,
+    4504, 4561, 4616, 4677, 4739, 4797, 4859, 4922, 4980, 5047,
+    5111, 5159, 5217, 5280, 5345, 5409, 5460, 5525, 5587, 5651,
+    5701, 5764, 5823, 5888, 5942, 6017, 6071, 6128
 ]
+
 
 export const files:file[] = [
     {number: 1, icon: undefined, filename: "mixes/Gebroeders Scooter - Totale Escalatie-GebroedersScooter_gebroeders-scooter-totale-escalatie.m4a", duration: 3573.7832199546483, title: "Gebroeders Scooter - Totale Escalatie", toeters: undefined},
@@ -82,7 +92,18 @@ export const containers: Container[] = [
         top: 10, bottom: 379, height: 414
     },
     {name: "Amsterdammer", capacity: 250, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
-    {name: "Flesje", capacity: 300, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
+    {
+        name: "Flesje 0.3L", capacity: 300,
+        empty_img: "containers/fles-empty.png",
+        full_img: "containers/fles-full.png",
+        top: 31, bottom: 570, height: 600
+    },
+    {
+        name: "Flesje 0.33L", capacity: 330,
+        empty_img: "containers/fles-empty.png",
+        full_img: "containers/fles-full.png",
+        top: 31, bottom: 570, height: 600
+    },
     {name: "Beugel", capacity: 450, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
     {name: "Pul 0.4L", capacity: 400, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
     {name: "Pul 0.5L", capacity: 500, empty_img: undefined, full_img: undefined, top: 0, bottom: 0, height: 0},
