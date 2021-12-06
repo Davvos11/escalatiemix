@@ -170,7 +170,7 @@ class Containers extends Component<props, state> {
         const container = this.state.container
         const relBottom = container.height - container.bottom
         // Calculate the amount of total volume and containers
-        let totalVolume = this.props.toeters.length * SHOTJE
+        const totalVolume = this.props.toeters.length * SHOTJE;
         const totalContainers = Math.ceil((totalVolume) / container.capacity)
         // Calculate the excess volume (i.e. the volume that should already be gone from the first container)
         const excessVolume = totalContainers * container.capacity - totalVolume
