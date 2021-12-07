@@ -9,21 +9,21 @@ import {Button} from "react-bootstrap";
 export const SHOTJE = 35
 
 type props = {
-    time: number
-    totalTime: number
-    toeters: number[]
+    toeterCount: number
+    toetersTotal: number
+    onUrlChange: (url: string, delay: number) => void
+    toeterUrl: string
+    toeterUrlDelay: number
 }
 
 type state = {
     displaySettings: boolean
     container: Container
-    toeterCount: number
     empties: JSX.Element[]
     current: JSX.Element
     fulls: JSX.Element[]
     showScrollLeft: boolean
     showScrollRight: boolean
-    toeterUrl: string
 }
 
 const IDS = {
@@ -33,31 +33,19 @@ const IDS = {
     "scrollRight": "scroll_right",
     "mainWrapper": "containerWrapper",
 }
-const LOCALSTORAGE = {
-    "toeterUrl": "toeter_url"
-}
 
 class Containers extends Component<props, state> {
     constructor(props: Readonly<props>) {
         super(props);
 
-        // Get the toeter URL from localStorage
-        let toeterUrl = ""
-        if (typeof(Storage) !== "undefined") {
-            const url = localStorage.getItem(LOCALSTORAGE.toeterUrl)
-            toeterUrl = url === null ? "" : url
-        }
-
         this.state = {
             displaySettings: false,
             container: containers[0],
-            toeterCount: 0,
             empties: [],
             current: <></>,
             fulls: [],
             showScrollLeft: false,
             showScrollRight: false,
-            toeterUrl,
         }
 
     }
@@ -69,8 +57,9 @@ class Containers extends Component<props, state> {
                 {this.state.displaySettings ?
                     <Settings container={this.state.container}
                               onClose={this.onSettingsClose}
-                              toeterCount={this.props.toeters.length}
-                              url={this.state.toeterUrl}
+                              toeterCount={this.props.toetersTotal}
+                              url={this.props.toeterUrl}
+                              delay={this.props.toeterUrlDelay}
                     />
                     : null
                 }
@@ -116,7 +105,7 @@ class Containers extends Component<props, state> {
 
     componentDidMount() {
         // Update the amount and fullness of the containers
-        this.updateContainers(this.state.toeterCount)
+        this.updateContainers(this.props.toeterCount)
 
         const container = document.getElementById(IDS.containerContainer)
         if (container !== null) {
@@ -139,48 +128,16 @@ class Containers extends Component<props, state> {
     }
 
     componentDidUpdate(prevProps: Readonly<props>, prevState: Readonly<state>, snapshot?: any) {
-        if (prevProps.time !== this.props.time) {
-            // Get the timestamp of the next toeter
-            let newCount = this.state.toeterCount
-            // Check if this timestamp has since passed
-            let nextToeter = this.props.toeters[newCount]
-            while (this.props.time >= nextToeter) {
-                newCount += 1
-                if (newCount >= this.props.toeters.length) {
-                    newCount = this.props.toeters.length
-                    break
-                }
-                nextToeter = this.props.toeters[newCount]
-            }
-            // Check if the current time is earlier than (what we believe is) the previous toeter
-            // TODO more efficient
-            nextToeter = this.props.toeters[newCount - 1]
-            while (this.props.time < nextToeter) {
-                newCount -= 1
-                if (newCount < 0) {
-                    newCount = 0
-                    break
-                }
-                nextToeter = this.props.toeters[newCount]
-                console.log(this.props.time, nextToeter, newCount)
-            }
-
-            if (newCount !== this.state.toeterCount)
-                this.updateContainers(newCount)
-            this.setState({toeterCount: newCount})
-        }
         if (prevState.container !== this.state.container) {
-            this.updateContainers(this.state.toeterCount)
+            this.updateContainers(this.props.toeterCount)
             setTimeout(this.scrollContainers, 1000)
         }
         if (prevState.empties.length !== this.state.empties.length) {
             // If a glass has been emptied, check if we need to scroll the glasses
             this.scrollContainers()
         }
-        if (prevState.toeterCount < this.state.toeterCount) {
-            // If it is set, send a GET request to the specified URL on each toeter
-            // (for example to turn on the escalatielight :thonk_happy:)
-            fetch(this.state.toeterUrl).then()
+        if (prevProps.toeterCount !== this.props.toeterCount) {
+            this.updateContainers(this.props.toeterCount)
         }
     }
 
@@ -188,7 +145,7 @@ class Containers extends Component<props, state> {
         const container = this.state.container
         const relBottom = container.height - container.bottom
         // Calculate the amount of total volume and containers
-        const totalVolume = this.props.toeters.length * SHOTJE;
+        const totalVolume = this.props.toetersTotal * SHOTJE;
         const totalContainers = Math.ceil((totalVolume) / container.capacity)
         // Calculate the excess volume (i.e. the volume that should already be gone from the first container)
         const excessVolume = totalContainers * container.capacity - totalVolume
@@ -231,7 +188,7 @@ class Containers extends Component<props, state> {
 
         // Create the container currently being drank
         let current = <></>
-        if (fullness !== 0 && toeterCount < this.props.toeters.length) {
+        if (fullness !== 0 && toeterCount < this.props.toetersTotal) {
             current = (<div className={styles.current}>
                 <div className={styles.emptyPart} style={{height: `${imageEmptiness * 100}%`}}>
                     <img src={container.empty_img} alt={""} style={{
@@ -259,13 +216,11 @@ class Containers extends Component<props, state> {
         this.updateScrollIndicators()
     }
 
-    private onSettingsClose = (container: Container, url: string) => {
-        // Save in localStorage
-        if (typeof(Storage) !== "undefined") {
-            localStorage.setItem(LOCALSTORAGE.toeterUrl, url)
-        }
+    private onSettingsClose = (container: Container, url: string, delay: number) => {
         // Update state
-        this.setState({container, toeterUrl: url, displaySettings: false})
+        this.setState({container, displaySettings: false})
+        // Send url update to parent
+        this.props.onUrlChange(url, delay)
     }
 
     private updateScrollIndicators = () => {

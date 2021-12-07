@@ -4,9 +4,10 @@ import {Container, containers} from "../config";
 import {SHOTJE} from "./Containers";
 
 type props = {
-    onClose: (container: Container, url: string) => void
+    onClose: (container: Container, url: string, delay: number) => void
     container: Container
     url: string
+    delay: number
     toeterCount: number
 }
 
@@ -14,6 +15,7 @@ type state = {
     show: boolean
     container: Container
     url: string
+    delay: number
 }
 
 class Settings extends Component<props, state> {
@@ -23,7 +25,8 @@ class Settings extends Component<props, state> {
         this.state = {
             show: true,
             container: props.container,
-            url: props.url
+            url: props.url,
+            delay: props.delay,
         }
     }
 
@@ -48,21 +51,31 @@ class Settings extends Component<props, state> {
                 <Modal.Body>
                     <Row>
                         <Col><FormLabel column>Inhoud:</FormLabel></Col>
-                        <Col><FormControl type="number" value={this.state.container.capacity} readOnly /></Col>
+                        <Col><FormControl type="number" value={this.state.container.capacity} readOnly/></Col>
                         <Col><FormLabel column>Aantal:</FormLabel></Col>
                         <Col><FormControl type="number" value={amount} readOnly/></Col>
                     </Row>
                 </Modal.Body>
                 <Modal.Body>
                     <FormLabel className="fw-bold">URL bij elke toeter (optioneel):</FormLabel>
-                    <InputGroup>
-                        <FormControl type="text" value={this.state.url}
-                                     onChange={event => this.setState({url: event.target.value})} />
-                        <Button variant="outline-primary" onClick={this.testUrl}>Test</Button>
-                    </InputGroup>
+                    <Row>
+                        <Col xs={12} md={3}>
+                            <FormLabel column>Delay:</FormLabel>
+                            <FormControl type="number" value={this.state.delay}
+                                         onChange={event => this.setState({delay: parseInt(event.target.value)})}/>
+                        </Col>
+                        <Col xs={12} md={9}>
+                            <FormLabel column>URL:</FormLabel>
+                            <InputGroup>
+                                <FormControl type="text" value={this.state.url}
+                                             onChange={event => this.setState({url: event.target.value})}/>
+                                <Button variant="outline-primary" onClick={this.testUrl}>Test</Button>
+                            </InputGroup>
+                        </Col>
+                    </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={this.close} >
+                    <Button variant="primary" onClick={this.close}>
                         OK
                     </Button>
                 </Modal.Footer>
@@ -76,7 +89,7 @@ class Settings extends Component<props, state> {
     }
 
     private onClose = () => {
-        this.props.onClose(this.state.container, this.state.url)
+        this.props.onClose(this.state.container, this.state.url, this.state.delay)
     }
 
     private onChange = (event: FormEvent<HTMLSelectElement>) => {

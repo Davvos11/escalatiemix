@@ -50,6 +50,14 @@ type state = {
     paused: boolean,
     centimerionTime: number | undefined
     startTime: number
+    toeterCount: number
+    toeterUrl: string
+    toeterUrlDelay: number
+}
+
+const LOCALSTORAGE = {
+    "toeterUrl": "toeter_url",
+    "toeterDelay": "toeter_delay"
 }
 
 class App extends Component<{}, state> {
@@ -65,6 +73,8 @@ class App extends Component<{}, state> {
 
         let list;
         let custom = false;
+        let toeterUrl = ""
+        let toeterUrlDelay = 0
 
         // If an order has been specified, create the custom playlist
         if (order.length > 0) {
@@ -74,6 +84,13 @@ class App extends Component<{}, state> {
             // Otherwise, try to get the specified or default playlist
             const index = getUrlParamInt('list')
             list = playlists[index]
+        }
+        // Get the toeter URL from localStorage
+        if (typeof(Storage) !== "undefined") {
+            const url = localStorage.getItem(LOCALSTORAGE.toeterUrl)
+            const delay = localStorage.getItem(LOCALSTORAGE.toeterDelay)
+            toeterUrl = url === null ? "" : url
+            toeterUrlDelay = delay === null ? 0 : parseInt(delay)
         }
 
         this.state = {
@@ -98,7 +115,10 @@ class App extends Component<{}, state> {
             order: custom ? order : undefined,
             paused: false,
             centimerionTime: undefined,
-            startTime
+            startTime,
+            toeterCount: 0,
+            toeterUrl,
+            toeterUrlDelay
         }
 
         this.airhornAudio = new Audio("toeter.ogg")
@@ -231,9 +251,12 @@ class App extends Component<{}, state> {
             />
 
             {mix.toeters === undefined ? null : (
-                <Containers time={this.state.elapsedInCurrentSong}
-                            totalTime={mix.duration}
-                            toeters={mix.toeters}/>
+                <Containers toeterCount={this.state.toeterCount}
+                            toetersTotal={mix.toeters.length}
+                            onUrlChange={this.onToeterUrlChange}
+                            toeterUrl={this.state.toeterUrl}
+                            toeterUrlDelay={this.state.toeterUrlDelay}
+                />
             )}
 
             {modal}
@@ -394,6 +417,69 @@ class App extends Component<{}, state> {
 
         const eta = new Date((new Date()).getTime() + left * 1000)
         this.setState({elapsed, left, eta, elapsedInCurrentSong: time})
+
+        // Get the current mix
+        if (this.state.mixes === undefined)
+            return
+        const mix = this.state.mixes[this.state.index]
+
+        if (mix.toeters !== undefined) {
+            // Check if a toeter has happened
+            const newCount = this.getNewToeterCount(this.state.elapsedInCurrentSong, mix.toeters)
+            // Update the amount of toeters
+            this.setState({toeterCount: newCount})
+
+            // Check if a toeter will happen in the next x seconds to call the url
+            // (only if set)
+            if (this.state.toeterUrl != "") {
+                // (yes, in theory this breaks if the delay is higher than the interval between
+                // toeters, but haha do you even know what project you are currently reading)
+                const newCount = this.getNewToeterCount(
+                    this.state.elapsedInCurrentSong + this.state.toeterUrlDelay, mix.toeters)
+                if (newCount > this.state.toeterCount) {
+                    // Call the specified URL
+                    fetch(this.state.toeterUrl).then()
+                }
+            }
+        }
+    }
+
+    private getNewToeterCount = (currentTime: number, toeters: number[]) => {
+        // Get the timestamp of the next toeter
+        let newCount = this.state.toeterCount
+        // Check if this timestamp has since passed
+        let nextToeter = toeters[newCount]
+        while (currentTime >= nextToeter) {
+            newCount += 1
+            if (newCount >= toeters.length) {
+                newCount = toeters.length
+                break
+            }
+            nextToeter = toeters[newCount]
+        }
+        // Check if the current time is earlier than (what we believe is) the previous toeter
+        // TODO more efficient
+        nextToeter = toeters[newCount - 1]
+        while (currentTime < nextToeter) {
+            newCount -= 1
+            if (newCount < 0) {
+                newCount = 0
+                break
+            }
+            nextToeter = toeters[newCount]
+        }
+
+        return newCount
+    }
+
+    private onToeterUrlChange = (url: string, delay: number) => {
+        // Save in localStorage
+        if (typeof(Storage) !== "undefined") {
+            localStorage.setItem(LOCALSTORAGE.toeterUrl, url)
+            localStorage.setItem(LOCALSTORAGE.toeterDelay, String(delay))
+        }
+        // Save in state
+        this.setState({toeterUrl: url, toeterUrlDelay: delay})
     }
 
     private secsToTime = (seconds: number) => {
