@@ -23,6 +23,7 @@ type state = {
     fulls: JSX.Element[]
     showScrollLeft: boolean
     showScrollRight: boolean
+    toeterUrl: string
 }
 
 const IDS = {
@@ -32,10 +33,20 @@ const IDS = {
     "scrollRight": "scroll_right",
     "mainWrapper": "containerWrapper",
 }
+const LOCALSTORAGE = {
+    "toeterUrl": "toeter_url"
+}
 
 class Containers extends Component<props, state> {
     constructor(props: Readonly<props>) {
         super(props);
+
+        // Get the toeter URL from localStorage
+        let toeterUrl = ""
+        if (typeof(Storage) !== "undefined") {
+            const url = localStorage.getItem(LOCALSTORAGE.toeterUrl)
+            toeterUrl = url === null ? "" : url
+        }
 
         this.state = {
             displaySettings: false,
@@ -46,6 +57,7 @@ class Containers extends Component<props, state> {
             fulls: [],
             showScrollLeft: false,
             showScrollRight: false,
+            toeterUrl,
         }
 
     }
@@ -55,9 +67,10 @@ class Containers extends Component<props, state> {
             <>
                 {/* Settings modal:*/}
                 {this.state.displaySettings ?
-                    <Settings selected={this.state.container}
+                    <Settings container={this.state.container}
                               onClose={this.onSettingsClose}
                               toeterCount={this.props.toeters.length}
+                              url={this.state.toeterUrl}
                     />
                     : null
                 }
@@ -164,6 +177,11 @@ class Containers extends Component<props, state> {
             // If a glass has been emptied, check if we need to scroll the glasses
             this.scrollContainers()
         }
+        if (prevState.toeterCount < this.state.toeterCount) {
+            // If it is set, send a GET request to the specified URL on each toeter
+            // (for example to turn on the escalatielight :thonk_happy:)
+            fetch(this.state.toeterUrl).then()
+        }
     }
 
     private updateContainers = (toeterCount: number) => {
@@ -241,8 +259,13 @@ class Containers extends Component<props, state> {
         this.updateScrollIndicators()
     }
 
-    private onSettingsClose = (container: Container) => {
-        this.setState({container, displaySettings: false})
+    private onSettingsClose = (container: Container, url: string) => {
+        // Save in localStorage
+        if (typeof(Storage) !== "undefined") {
+            localStorage.setItem(LOCALSTORAGE.toeterUrl, url)
+        }
+        // Update state
+        this.setState({container, toeterUrl: url, displaySettings: false})
     }
 
     private updateScrollIndicators = () => {
@@ -255,7 +278,7 @@ class Containers extends Component<props, state> {
         // Check if we need to show the indicators
         this.setState({
             showScrollLeft: scrolled > 0,
-            showScrollRight: scrolled < 1 && width != 0
+            showScrollRight: scrolled < 1 && width !== 0
         })
     }
 }

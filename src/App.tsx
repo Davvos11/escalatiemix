@@ -24,7 +24,7 @@ import ShareDialog from "./ShareDialog";
 import {shuffle} from "underscore";
 import PianoManDialog from "./PianoManDialog";
 import {Centimerion, CentimerionFormProps} from "./Centimerion";
-import Containers from "./container-display/Containers";
+import Containers from "./toeter-handler/Containers";
 
 type state = {
     mixes: mix[] | undefined,

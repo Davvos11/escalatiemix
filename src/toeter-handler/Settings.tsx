@@ -1,17 +1,19 @@
 import {Component, FormEvent} from "react";
-import {Button, Col, FormControl, FormLabel, FormSelect, Modal, Row} from "react-bootstrap";
+import {Button, Col, FormControl, FormLabel, FormSelect, InputGroup, Modal, Row} from "react-bootstrap";
 import {Container, containers} from "../config";
 import {SHOTJE} from "./Containers";
 
 type props = {
-    onClose: (selected: Container) => void
-    selected: Container
+    onClose: (container: Container, url: string) => void
+    container: Container
+    url: string
     toeterCount: number
 }
 
 type state = {
     show: boolean
-    selected: Container
+    container: Container
+    url: string
 }
 
 class Settings extends Component<props, state> {
@@ -20,12 +22,13 @@ class Settings extends Component<props, state> {
 
         this.state = {
             show: true,
-            selected: props.selected,
+            container: props.container,
+            url: props.url
         }
     }
 
     render() {
-        const amount = this.props.toeterCount * SHOTJE / this.state.selected.capacity
+        const amount = this.props.toeterCount * SHOTJE / this.state.container.capacity
 
         return (
             <Modal show={this.state.show} onHide={this.close} onExited={this.onClose}
@@ -38,17 +41,25 @@ class Settings extends Component<props, state> {
                     <FormLabel className="fw-bold">Glas:</FormLabel>
                     <FormSelect size="lg" onChange={this.onChange}>
                         {containers.map((list, index) => {
-                            return <option key={index} selected={list === this.props.selected}>{list.name}</option>
+                            return <option key={index} selected={list === this.props.container}>{list.name}</option>
                         })}
                     </FormSelect>
                 </Modal.Body>
                 <Modal.Body>
                     <Row>
                         <Col><FormLabel column>Inhoud:</FormLabel></Col>
-                        <Col><FormControl type="number" value={this.state.selected.capacity} readOnly /></Col>
+                        <Col><FormControl type="number" value={this.state.container.capacity} readOnly /></Col>
                         <Col><FormLabel column>Aantal:</FormLabel></Col>
                         <Col><FormControl type="number" value={amount} readOnly/></Col>
                     </Row>
+                </Modal.Body>
+                <Modal.Body>
+                    <FormLabel className="fw-bold">URL bij elke toeter (optioneel):</FormLabel>
+                    <InputGroup>
+                        <FormControl type="text" value={this.state.url}
+                                     onChange={event => this.setState({url: event.target.value})} />
+                        <Button variant="outline-primary" onClick={this.testUrl}>Test</Button>
+                    </InputGroup>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={this.close} >
@@ -65,12 +76,16 @@ class Settings extends Component<props, state> {
     }
 
     private onClose = () => {
-        this.props.onClose(this.state.selected)
+        this.props.onClose(this.state.container, this.state.url)
     }
 
     private onChange = (event: FormEvent<HTMLSelectElement>) => {
         const value = event.currentTarget.selectedIndex
-        this.setState({selected: containers[value]})
+        this.setState({container: containers[value]})
+    }
+
+    private testUrl = () => {
+        fetch(this.state.url).then()
     }
 }
 
