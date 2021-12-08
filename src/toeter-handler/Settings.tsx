@@ -19,6 +19,8 @@ type state = {
 }
 
 class Settings extends Component<props, state> {
+    private airhornAudio: HTMLAudioElement;
+
     constructor(props: Readonly<props>) {
         super(props);
 
@@ -28,6 +30,8 @@ class Settings extends Component<props, state> {
             url: props.url,
             delay: props.delay,
         }
+
+        this.airhornAudio = new Audio("toeter.ogg")
     }
 
     render() {
@@ -61,8 +65,8 @@ class Settings extends Component<props, state> {
                     <Row>
                         <Col xs={12} md={3}>
                             <FormLabel column>Delay:</FormLabel>
-                            <FormControl type="number" value={this.state.delay}
-                                         onChange={event => this.setState({delay: parseInt(event.target.value)})}/>
+                            <FormControl type="number" step={0.1} value={this.state.delay}
+                                         onChange={event => this.setState({delay: parseFloat(event.target.value)})}/>
                         </Col>
                         <Col xs={12} md={9}>
                             <FormLabel column>URL:</FormLabel>
@@ -98,7 +102,13 @@ class Settings extends Component<props, state> {
     }
 
     private testUrl = () => {
+        // Fire the GET request
         fetch(this.state.url).then()
+        // Play the toeter sound after the specified delay
+        setTimeout(() => {
+            this.airhornAudio.currentTime = 0
+            this.airhornAudio.play().then()
+        }, this.state.delay * 1000)
     }
 }
 
