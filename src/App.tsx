@@ -431,7 +431,7 @@ class App extends Component<{}, state> {
 
             // Check if a toeter will happen in the next x seconds to call the url
             // (only if set)
-            if (this.state.toeterUrl != "") {
+            if (this.state.toeterUrl !== "") {
                 // (yes, in theory this breaks if the delay is higher than the interval between
                 // toeters, but haha do you even know what project you are currently reading)
                 const newCount = this.getNewToeterCount(
