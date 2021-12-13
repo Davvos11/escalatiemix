@@ -424,6 +424,7 @@ class App extends Component<{}, state> {
         const mix = this.state.mixes[this.state.index]
 
         if (mix.toeters !== undefined) {
+            const oldCount = this.state.toeterCount
             // Check if a toeter has happened
             const newCount = this.getNewToeterCount(this.state.elapsedInCurrentSong, mix.toeters)
             // Update the amount of toeters
@@ -436,9 +437,9 @@ class App extends Component<{}, state> {
                 // toeters, but haha do you even know what project you are currently reading)
                 const newCount = this.getNewToeterCount(
                     this.state.elapsedInCurrentSong + this.state.toeterUrlDelay, mix.toeters)
-                if (newCount > this.state.toeterCount) {
+                if (newCount > oldCount) {
                     // Call the specified URL
-                    fetch(this.state.toeterUrl).then()
+                    fetch(this.state.toeterUrl).then().catch(e => {/* nou en */})
                 }
             }
         }
