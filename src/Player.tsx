@@ -101,7 +101,7 @@ class Player extends Component<props, state> {
         // Start emitting the time every second
         setInterval(() => {
             this.props.emitTime(this.audio.currentTime)
-        }, 1000)
+        }, 100)
 
         // Listen for changes
         this.audio.addEventListener("pause", ev => {
