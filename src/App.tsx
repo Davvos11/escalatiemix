@@ -396,6 +396,10 @@ class App extends Component<{}, state> {
                     // Reset the starting time if it was set for the previous song
                     await this.asyncSetState({startTime: 0})
                 }
+
+                // Reset the toetercount
+                this.setState({toeterCount: 0})
+                // Load the next song
                 await this.asyncSetState({index: this.state.index + 1})
                 this.loadSong(this.state.index)
             }
