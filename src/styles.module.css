@@ -167,6 +167,10 @@ h1 {
     border-color: transparent;
 }
 
+.mixTitle {
+    display: none;
+}
+
 @media screen and (max-width: 800px) {
     .barWrapper {
         height: initial;
@@ -185,6 +189,8 @@ h1 {
     .bar div {
         width: 100% !important;
         height: 50px;
+        display: flex;
+        /*justify-content: space-between;*/
     }
 
     .bar div:not(:first-child) {
@@ -196,8 +202,25 @@ h1 {
         display: none;
     }
 
+    .draggingItem {
+        border-top: none !important;
+        background: white;
+    }
+
     .times {
         margin-bottom: 0;
+    }
+
+    .bar > div > span:first-child {
+        margin-left: 10px;
+        width: 60px;
+    }
+
+    .mixTitle {
+        display: initial;
+        flex-grow: 1;
+        text-align: left;
+        margin-left: 20px;
     }
 }
 

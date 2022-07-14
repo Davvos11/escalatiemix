@@ -115,3 +115,23 @@ const encodeUrlParams: (query: {[id: string]: string}) => string = (query) => {
 
     return result.replace(/&$/, "")
 }
+
+export const getMixTitle: (name: string) => string = (name) => {
+    // Try to get the part after the last "-" in the title
+    let titleRegex =  new RegExp(".+ - (.+)")
+    let match = titleRegex.exec(name)
+
+    if (!match)
+        return name
+
+    let title = match[1]
+
+    // If this succeeded, try to remove the "totale escalatie" part
+    titleRegex = new RegExp("Totale Escalatie (.+)")
+    match = titleRegex.exec(title)
+
+    if (!match)
+        return title
+    else
+        return  match[1]
+}

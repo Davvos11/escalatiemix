@@ -1,10 +1,11 @@
 import {Component} from "react";
 import {ReactSortable} from "react-sortablejs";
 
-import {mix} from "./functions";
+import {getMixTitle, mix} from "./functions";
 import styles from "./styles.module.css"
 import {getIcon} from "./Bar";
 import _ from "underscore";
+import BarEntryTitle from "./BarEntryTitle";
 
 type item = {
     id: number;
@@ -65,7 +66,7 @@ class SortableBar extends Component<props, state> {
 
                         return <div style={{width: length + "%"}} key={index}
                         >
-                            {getIcon(mix)}
+                            <BarEntryTitle mix={mix}/>
                         </div>
                     })}
                 </ReactSortable>

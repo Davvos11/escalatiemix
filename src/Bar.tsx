@@ -1,8 +1,9 @@
 import {Component} from "react";
-import {mix} from "./functions";
+import {getMixTitle, mix} from "./functions";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 import styles from "./styles.module.css"
+import BarEntryTitle from "./BarEntryTitle";
 
 type props = {
     mixes: mix[]
@@ -40,7 +41,7 @@ class Bar extends Component<props, state> {
                     return <div style={{width: length + "%"}}
                                 onClick={() => this.props.onClick(index)}
                                 key={index}>
-                        {getIcon(mix)}
+                        <BarEntryTitle mix={mix}/>
                     </div>
                 })}
             </div>
