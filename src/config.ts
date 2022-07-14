@@ -209,6 +209,7 @@ export const files: file[] = [
 ]
 
 export const playlists: playlist[] = [
+    {name: "Default", list: [19, 11, 14, 9, 15, 7, 8, 12, 2, 10, 5, 6, 3, 1, 0, 13, 4]},
     {name: "Nice volgorde", list: [11, 14, 19, 9, 15, 7, 8, 12, 2, 10, 5, 6, 3, 1, 0, 13, 4]},
     {name: "Alleen nice mixen", list: [11, 14, 19, 9, 15, 7, 8, 12, 2, 10]},
     {name: "Chronologisch (centurion als laatste)", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 11, 19]},
