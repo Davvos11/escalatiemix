@@ -25,7 +25,7 @@ class Bar extends Component<props, state> {
 
         return <div className={styles.barWrapper}>
             <div className={`${styles.bar} ${styles.progress}`} style={{width: width}}>placeholder</div>
-            <div className={styles.bar}>
+            <div className={styles.bar} >
                 {this.props.mixes.map((mix, index) => {
                     let duration = mix.duration
                     if (this.props.centimerionTime !== undefined && index === 1) {
@@ -39,7 +39,7 @@ class Bar extends Component<props, state> {
 
                     return <div style={{width: length + "%"}}
                                 onClick={() => this.props.onClick(index)}
-                                key={index} >
+                                key={index}>
                         {getIcon(mix)}
                     </div>
                 })}

@@ -4,6 +4,8 @@
 
 .container {
     text-align: center;
+    display: flex;
+    flex-direction: column;
 }
 
 .start {
@@ -165,6 +167,46 @@ h1 {
     border-color: transparent;
 }
 
+@media screen and (max-width: 800px) {
+    .barWrapper {
+        height: initial;
+        position: initial;
+
+        order: 2;
+        margin-top: 10px;
+    }
+
+    .bar {
+        flex-direction: column;
+        height: initial;
+        position: initial;
+    }
+
+    .bar div {
+        width: 100% !important;
+        height: 50px;
+    }
+
+    .bar div:not(:first-child) {
+        border-left: initial;
+        border-top: 3px solid black;
+    }
+
+    .progress {
+        display: none;
+    }
+
+    .times {
+        margin-bottom: 0;
+    }
+}
+
+@media screen and (min-width: 801px) {
+    .bar:not(.progress) {
+        background: initial !important;
+    }
+}
+
 .sortableBar div {
     cursor: grab;
 }
@@ -232,7 +274,7 @@ h1 {
     margin-bottom: 2vh;
 }
 
-@media screen and (min-height: 730px){
+@media screen and (min-height: 730px) and (min-width: 801px){
     .dropdownWrapper {
         min-height: 300px;
     }
