@@ -9,6 +9,8 @@ type props = {
     mixes: mix[]
     duration: number
     elapsed: number
+    elapsedInCurrentSong: number
+    currentMix: number
     onClick: (index: number) => void
     centimerionTime: number | undefined
 }
@@ -17,16 +19,12 @@ type state = {}
 class Bar extends Component<props, state> {
     render() {
         const progress = this.props.elapsed / this.props.duration * 100
-        let width
-        if (progress < 50) {
-            width = `calc(${progress}% + 3px)`
-        } else {
-            width = `${progress}%`
-        }
+
+        const width = progress < 50 ? `calc(${progress}% + 3px)` : `${progress}%`;
 
         return <div className={styles.barWrapper}>
             <div className={`${styles.bar} ${styles.progress}`} style={{width: width}}>placeholder</div>
-            <div className={styles.bar} >
+            <div className={styles.bar}>
                 {this.props.mixes.map((mix, index) => {
                     let duration = mix.duration
                     if (this.props.centimerionTime !== undefined && index === 1) {
@@ -38,9 +36,25 @@ class Bar extends Component<props, state> {
                         length = duration / this.props.duration * 100.
                     }
 
+                    const className = index < this.props.currentMix ? styles.elapsedMix :
+                        (index === this.props.currentMix ? styles.currentMix : '')
+
+                    if (index === this.props.currentMix) {
+                        // Calculate progress bar for the current song, for the mobile view
+                        const progress = this.props.elapsedInCurrentSong / mix.duration * 100
+                        let width
+                        if (progress < 50) {
+                            width = `calc(${progress}% + 3px)`
+                        } else {
+                            width = `${progress}%`
+                        }
+                    }
+
                     return <div style={{width: length + "%"}}
                                 onClick={() => this.props.onClick(index)}
-                                key={index}>
+                                key={index}
+                                className={className}
+                    >
                         <BarEntryTitle mix={mix}/>
                     </div>
                 })}

@@ -248,6 +248,8 @@ class App extends Component<{}, state> {
                  duration={this.state.duration}
                  elapsed={this.state.elapsed}
                  centimerionTime={this.state.centimerionTime}
+                 currentMix={this.state.index}
+                 elapsedInCurrentSong={this.state.elapsedInCurrentSong}
             />
 
             {mix.toeters === undefined ? null : (

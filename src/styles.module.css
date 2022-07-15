@@ -222,6 +222,14 @@ h1 {
         text-align: left;
         margin-left: 20px;
     }
+
+    .elapsedMix {
+        background: #83F656;
+    }
+
+    .currentMix {
+        background: #c6ecf3;
+    }
 }
 
 @media screen and (min-width: 801px) {
