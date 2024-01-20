@@ -210,15 +210,23 @@ export const files: file[] = [
         duration: 6161.653,
         title: "Gebroeders Scooter - Totale Escalatie Centurion 2.0",
         toeters: toetersCenturion2
-    }
+    },
+    /*20*/{
+        number: 11,
+        icon: undefined,
+        filename: "mixes/Gebroeders Scooter - Totale Escalatie Spuit 11-GebroedersScooter_gebroeders-scooter-totale-escalatie-spuit-11.m4a",
+        duration: 6161.653,
+        title: "Gebroeders Scooter - Totale Escalatie Spuit 11",
+        toeters: undefined
+    },
 ]
 
 export const playlists: playlist[] = [
-    {name: "Default", list: [19, 11, 14, 9, 15, 7, 8, 12, 2, 10, 5, 6, 3, 1, 0, 13, 4]},
-    {name: "Nice volgorde", list: [11, 14, 19, 9, 15, 7, 8, 12, 2, 10, 5, 6, 3, 1, 0, 13, 4]},
+    {name: "Default", list: [20, 19, 11, 14, 9, 15, 7, 8, 12, 2, 10, 5, 6, 3, 1, 0, 13, 4]},
+    {name: "Nice volgorde", list: [11, 14, 19, 9, 20, 15, 7, 8, 12, 2, 10, 5, 6, 3, 1, 0, 13, 4]},
     {name: "Alleen nice mixen", list: [11, 14, 19, 9, 15, 7, 8, 12, 2, 10]},
-    {name: "Chronologisch (centurion als laatste)", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 11, 19]},
-    {name: "Chronologisch", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 19]},
+    {name: "Chronologisch (centurion als laatste)", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 20, 11, 19]},
+    {name: "Chronologisch", list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 19, 20]},
     {name: "Centurioni", list: [11, 19]}
 ]
 
