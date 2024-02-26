@@ -56,7 +56,10 @@ class Player extends Component<props, state> {
         try {
             await this.audio.play()
         } catch (e) {
-            console.error(e, e.name)
+            if (!(e instanceof DOMException)) {
+                this.setState({error: String(e)})
+                return
+            }
 
             if (e.name === "NotAllowedError") {
                 this.setState({
