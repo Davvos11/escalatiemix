@@ -100,6 +100,13 @@ class Player extends Component<props, state> {
         }
     }
 
+    private keyHandler = (e: KeyboardEvent) => {
+        if (e.code === "Space" || e.code === "KeyK") {
+            e.preventDefault();
+            this.toggle().then();
+        }
+    }
+
     async componentDidMount() {
         // Start emitting the time every second
         setInterval(() => {
@@ -116,6 +123,9 @@ class Player extends Component<props, state> {
         this.audio.addEventListener("ended", ev => {
             this.props.onChange(change.Finish)
         })
+
+        // Listen for spacebar
+        document.addEventListener('keydown', this.keyHandler)
 
         return this.start()
     }
@@ -142,6 +152,7 @@ class Player extends Component<props, state> {
     }
 
     async componentWillUnmount() {
+        document.removeEventListener('keydown', this.keyHandler)
         if (this.audio) {
             this.audio.pause();
         }
