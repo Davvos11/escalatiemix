@@ -71,7 +71,7 @@ class SortableBar extends Component<props, state> {
                     })}
                 </ReactSortable>
             </div>
-            <i style={{fontSize: "1.2em"}}>Sleep de icoontjes om de volgorde aan te passen</i>
+            <i style={{fontSize: "1.2em", marginBottom: "10px"}}>Sleep de icoontjes om de volgorde aan te passen</i>
         </>);
     }
 

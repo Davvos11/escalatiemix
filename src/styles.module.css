@@ -99,14 +99,18 @@ h1 {
     font-variant-numeric: tabular-nums;
 }
 
-.times h1 {
+.times div {
     flex-grow: 1;
     flex-basis: 0;
     min-width: 250px;
 }
 
+.times div h1 {
+    margin-top: -5px;
+}
+
 @media screen and (max-width: 773px) {
-    .times h1:nth-child(2) {
+    .times div:nth-child(2) {
         order: 3;
     }
 
