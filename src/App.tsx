@@ -238,9 +238,18 @@ class App extends Component<{}, state> {
             />
 
             <div className={styles.times}>
-                <h1>{this.secsToTime(this.state.elapsed)}</h1>
-                <h1>{this.getEta(this.state.eta)}</h1>
-                <h1>{this.secsToTime(this.state.left)}</h1>
+                <div>
+                    <span>Verstreken:</span>
+                    <h1>{this.secsToTime(this.state.elapsed)}</h1>
+                </div>
+                <div>
+                    <span>ETA:</span>
+                    <h1>{this.getEta(this.state.eta)}</h1>
+                </div>
+                <div>
+                    <span>Resterend:</span>
+                    <h1>{this.secsToTime(this.state.left)}</h1>
+                </div>
             </div>
 
             <Bar mixes={this.state.mixes}
