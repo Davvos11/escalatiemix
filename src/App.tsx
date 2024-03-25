@@ -86,7 +86,7 @@ class App extends Component<{}, state> {
             list = playlists[index]
         }
         // Get the toeter URL from localStorage
-        if (typeof(Storage) !== "undefined") {
+        if (typeof (Storage) !== "undefined") {
             const url = localStorage.getItem(LOCALSTORAGE.toeterUrl)
             const delay = localStorage.getItem(LOCALSTORAGE.toeterDelay)
             toeterUrl = url === null ? "" : url
@@ -182,10 +182,21 @@ class App extends Component<{}, state> {
             )
             // Show the current playlist
             if (this.mixes !== undefined) {
-                content.push(<SortableBar key={this.state.playlist.name} mixes={this.mixes}
-                                          duration={this.state.duration}
-                                          playlist={this.state.playlist.list}
-                                          onUpdate={this.loadCustomList}/>)
+                content.push(<><SortableBar key={this.state.playlist.name} mixes={this.mixes}
+                                            duration={this.state.duration}
+                                            playlist={this.state.playlist.list}
+                                            onUpdate={this.loadCustomList}/>
+                    <div className={styles.times}>
+                        <div>
+                            <span>Lengte:</span>
+                            <h1>{this.secsToTime(this.state.duration, false)}</h1>
+                        </div>
+                        <div>
+                            <span>ETA:</span>
+                            <h1>{this.getEta(this.state.eta)}</h1>
+                        </div>
+                    </div>
+                </>)
             }
 
             return (
@@ -339,7 +350,8 @@ class App extends Component<{}, state> {
         if (this.state.centimerionTime !== undefined) {
             duration -= this.state.centimerionTime
         }
-        this.setState({duration: duration})
+        const eta = new Date((new Date()).getTime() + duration * 1000)
+        this.setState({duration, eta})
         // Load the first song
         this.loadSong(this.state.index);
 
@@ -454,7 +466,8 @@ class App extends Component<{}, state> {
                     this.state.elapsedInCurrentSong + this.state.toeterUrlDelay, mix.toeters)
                 if (newCount > oldCount) {
                     // Call the specified URL
-                    fetch(this.state.toeterUrl).then().catch(e => {/* nou en */})
+                    fetch(this.state.toeterUrl).then().catch(e => {/* nou en */
+                    })
                 }
             }
         }
@@ -490,7 +503,7 @@ class App extends Component<{}, state> {
 
     private onToeterUrlChange = (url: string, delay: number) => {
         // Save in localStorage
-        if (typeof(Storage) !== "undefined") {
+        if (typeof (Storage) !== "undefined") {
             localStorage.setItem(LOCALSTORAGE.toeterUrl, url)
             localStorage.setItem(LOCALSTORAGE.toeterDelay, String(delay))
         }
