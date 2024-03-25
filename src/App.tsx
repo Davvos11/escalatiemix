@@ -489,8 +489,16 @@ class App extends Component<{}, state> {
         this.setState({toeterUrl: url, toeterUrlDelay: delay})
     }
 
-    private secsToTime = (seconds: number) => {
-        return new Date(seconds * 1000).toISOString().substr(11, 8)
+    private secsToTime = (seconds: number, showSeconds = true) => {
+        const hours = Math.floor(seconds / 3600).toString().padStart(2, "0");
+        const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, "0");
+        const secondsLeft = Math.floor(seconds % 60).toString().padStart(2, "0");
+
+        if (showSeconds) {
+            return `${hours}:${minutes}:${secondsLeft}`
+        } else {
+            return `${hours}:${minutes}`
+        }
     }
 
     private getEta = (date: Date) => {
