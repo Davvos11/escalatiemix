@@ -22,3 +22,24 @@ code {
 .controlsDivStyle {
   display: none !important;
 }
+
+@keyframes alternateColors {
+    0% {
+        background: linear-gradient(to bottom right, #65BBCC, #83F656);
+    }
+    50% {
+        background: radial-gradient(blue, #83F656);
+    }
+    100% {
+        background: linear-gradient(to bottom right, #65BBCC, #83F656);
+    }
+}
+
+.toeterBackground {
+    animation: alternateColors 0.5s infinite;
+    animation-timing-function: ease-in-out;
+}
+
+.escalatieKnop {
+    margin: 1rem 0;
+}

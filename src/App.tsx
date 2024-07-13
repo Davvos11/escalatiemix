@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from 'react';
-import {Button, Container} from 'react-bootstrap';
+import {Button, Container, FormCheck} from 'react-bootstrap';
 import moment, {Moment, Duration} from 'moment';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
@@ -52,7 +52,8 @@ type state = {
     startTime: number
     toeterCount: number
     toeterUrl: string
-    toeterUrlDelay: number
+    toeterUrlDelay: number,
+    escalatieLicht: boolean,
 }
 
 const LOCALSTORAGE = {
@@ -118,7 +119,8 @@ class App extends Component<{}, state> {
             startTime,
             toeterCount: 0,
             toeterUrl,
-            toeterUrlDelay
+            toeterUrlDelay,
+            escalatieLicht: false,
         }
 
         this.airhornAudio = new Audio("toeter.ogg")
@@ -171,6 +173,10 @@ class App extends Component<{}, state> {
                     </Fragment>
                 );
             }
+
+            content.push(
+                <FormCheck type="switch" label="Escalatielicht" onChange={(event) => this.setState({escalatieLicht: event.target.checked})}></FormCheck>
+            )
 
             // Show the playlist selection
             content.push(<div key="playlist-select" className={styles.playlistSelectWrapper}>
@@ -453,18 +459,21 @@ class App extends Component<{}, state> {
         if (mix.toeters !== undefined) {
             const oldCount = this.state.toeterCount
             // Check if a toeter has happened
-            const newCount = this.getNewToeterCount(this.state.elapsedInCurrentSong, mix.toeters)
+            let newCount = this.getNewToeterCount(this.state.elapsedInCurrentSong, mix.toeters)
             // Update the amount of toeters
             this.setState({toeterCount: newCount})
 
             // Check if a toeter will happen in the next x seconds to call the url
             // (only if set)
-            if (this.state.toeterUrl !== "") {
-                // (yes, in theory this breaks if the delay is higher than the interval between
-                // toeters, but haha do you even know what project you are currently reading)
-                const newCount = this.getNewToeterCount(
-                    this.state.elapsedInCurrentSong + this.state.toeterUrlDelay, mix.toeters)
-                if (newCount > oldCount) {
+            // (yes, in theory this breaks if the delay is higher than the interval between
+            // toeters, but haha do you even know what project you are currently reading)
+            newCount = this.getNewToeterCount(
+                this.state.elapsedInCurrentSong + this.state.toeterUrlDelay, mix.toeters)
+            if (newCount > oldCount) {
+                if (this.state.escalatieLicht) {
+                    this.showEscalatieLicht();
+                }
+                if (this.state.toeterUrl !== "") {
                     // Call the specified URL
                     fetch(this.state.toeterUrl).then().catch(e => {/* nou en */
                     })
@@ -499,6 +508,11 @@ class App extends Component<{}, state> {
         }
 
         return newCount
+    }
+
+    private showEscalatieLicht = () => {
+        document.body.classList.add("toeterBackground")
+        setTimeout(() => document.body.classList.remove("toeterBackground"), 2000);
     }
 
     private onToeterUrlChange = (url: string, delay: number) => {
