@@ -1,0 +1,11 @@
+# Gitignored media (mixes/, centimerion/, pianoman.mp4), ~700 MB.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi
