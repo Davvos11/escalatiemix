@@ -1,0 +1,10 @@
+node_modules/
+build/
+.git/
+.github/
+.idea/
+.stfolder/
+k8s/
+public/mixes/
+public/centimerion/
+public/pianoman.mp4
