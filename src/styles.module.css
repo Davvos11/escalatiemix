@@ -33,9 +33,11 @@
     display: flex;
 }
 
-.topButtons * {
+.topButtons > button {
     margin-right: 10px;
     width: 40px;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .icon {
