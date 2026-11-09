@@ -19,9 +19,9 @@ type props = {
 type state = {
     displaySettings: boolean
     container: Container
-    empties: JSX.Element[]
-    current: JSX.Element
-    fulls: JSX.Element[]
+    empties: React.JSX.Element[]
+    current: React.JSX.Element
+    fulls: React.JSX.Element[]
     showScrollLeft: boolean
     showScrollRight: boolean
 }
