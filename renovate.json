@@ -1,4 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>Davvos11/.github"]
+  "extends": ["github>Davvos11/.github"],
+  "packageRules": [
+    {
+      "description": "react-scripts 5 needs TypeScript ^3.2.1 || ^4 (its peer range); TypeScript 7 has no JS API at all",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<5"
+    }
+  ]
 }

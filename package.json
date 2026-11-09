@@ -3,6 +3,7 @@
   "homepage": "/escalatie",
   "version": "2.0.0",
   "private": true,
+  "packageManager": "npm@11.20.0",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.0.0",
